@@ -1,13 +1,14 @@
-const passport  = require('passport');
+const passport = require('passport');
+require('dotenv').config();
 const Cors = require('cors');
-const bodyParser  = require('body-parser');
-const express  = require('express');
+const bodyParser = require('body-parser');
+const express = require('express');
 
 const routes = require('./index');
 
 let app = express();
 
-//TODO passport config
+require('./config/passport');
 
 app.use(Cors());
 app.use(bodyParser.json());
