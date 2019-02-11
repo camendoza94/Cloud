@@ -1,4 +1,5 @@
-const pool = require('../db');
+const db = require('../config/db');
+const User = db.users;
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const crypto = require('crypto');
@@ -8,13 +9,16 @@ passport.use(new LocalStrategy({
     usernameField: 'user[email]',
     passwordField: 'user[password]',
 }, (email, password, done) => {
-    pool.query('SELECT * FROM users WHERE email = $1', [email],
-        (err, res) => {
-            if (err || !validatePassword(res.rows[0], password)) {
-                return done(null, false, {errors: {'email or password': 'is invalid'}});
-            }
-            return done(null, res.rows[0]);
-        });
+
+    User.findByEmail(email).then((user) => {
+        if(!validatePassword(user, password)){
+            done(null, false, {errors: {'email or password': 'is invalid'}});
+        }
+        done(null, user);
+    }).catch((err) => {
+        done(null, false, {errors: {'email or password': 'is invalid'}});
+    });
+    
 }));
 
 

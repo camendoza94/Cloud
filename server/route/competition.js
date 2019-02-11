@@ -1,0 +1,4 @@
+// Competitions
+module.exports = (app) => {
+    
+};

@@ -1,11 +1,12 @@
-const {setPassword, generateJWT, toAuthJSON} = require('./config/passport');
-const pool = require('./db');
-const auth = require('./config/auth');
+const {setPassword, generateJWT, toAuthJSON} = require('../config/passport');
+const db = require('../config/db');
+const User = db.users;
+const auth = require('../config/auth');
 const passport = require('passport');
 const uuidv4 = require('uuid/v4');
 
+// Users
 module.exports = (app) => {
-    //Users
     app.post('/users', auth.optional, (req, res, next) => {
         const {body: {user}} = req;
         if (!user.email) {
@@ -26,17 +27,19 @@ module.exports = (app) => {
         const finalUser = {email: user.email, hash: '', salt: ''};
 
         setPassword(finalUser, user.password);
-
-        const query = 'INSERT INTO users(id, email, hash, salt) VALUES($1, $2, $3, $4) RETURNING *';
-        const values = [uuidv4(), finalUser.email, finalUser.hash, finalUser.salt];
-
-        return pool.query(query, values, (err, resp) => {
-            if (err) {
+        //TODO: Check if UUIDV4 for id is needed
+        return User.create({
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: finalUser.email,
+                hash: finalUser.hash,
+                salt: finalUser.salt
+            }).then( (newUser) => {
+                user.token = generateJWT(newUser);
+                res.json({user: toAuthJSON(finalUser)});
+            }).catch((err) => {
                 return res.send(err.stack);
-            }
-            user.token = generateJWT(resp.rows[0]);
-            res.json({user: toAuthJSON(finalUser)});
-        });
+            });
     });
 
     app.post('/login', auth.optional, (req, res, next) => {
@@ -76,12 +79,10 @@ module.exports = (app) => {
     app.get('/current', auth.required, (req, res, next) => {
         const {payload: {id}} = req;
 
-        return pool.query('SELECT * FROM users WHERE id = $1', [id],(err, resp) => {
-                if (err) {
-                    return res.sendStatus(400);
-                }
-
-                return res.json({user: toAuthJSON(resp.rows[0])});
-            });
+        User.findById(id).then((user) => {
+                                res.json({user: toAuthJSON(user)});
+                            }).catch((err) => {
+                                return res.send(err.stack);
+                            });
     });
 };
