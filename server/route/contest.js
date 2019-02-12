@@ -1,26 +1,17 @@
+const auth = require('../config/auth');
+const Contest = require('../controller/contest');
+
 // Contests
 module.exports = (app) => {
-    app.get('/contests', auth.optional, (req, res) => {
+    app.get('/contests', auth.optional, Contest.findAll);
 
-    });
+    app.delete('/contests/:id', auth.required, Contest.findById);
 
-    app.delete('/contests/:id', auth.required, (req, res) => {
+    app.put('/contests/:id', auth.required, Contest.update);
 
-    });
-
-    app.put('/contests/:id', auth.required, (req, res) => {
+    app.post('/contests/:url/participantRecords', auth.optional, Contest.addParticipantRecord);
     
-    });
+    app.get('/contests/:id/participantsRecords', auth.required, Contest.getParticipantRecord);
 
-    app.post('/contests/:url/participantRecords', auth.optional, (req, res) => {
-    
-    });
-    
-    app.get('/contests/:id/participantsRecords', auth.required, (req, res) => {
-    
-    });
-
-    app.post('/contests/:idContest/selectWinner/:idParticipantRecord', auth.required, (req, res) => {
-    
-    });
+    app.post('/contests/:idContest/selectWinner/:idParticipantRecord', auth.required, Contest.setParticipantRecordWinner);
 };
