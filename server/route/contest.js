@@ -5,13 +5,15 @@ const Contest = require('../controller/contest');
 module.exports = (app) => {
     app.get('/contests', auth.optional, Contest.findAll);
 
-    app.delete('/contests/:id', auth.required, Contest.findById);
+    app.get('/contests/:id', auth.required, Contest.findById);
+
+    app.delete('/contests/:id', auth.required, Contest.delete);
 
     app.put('/contests/:id', auth.required, Contest.update);
 
     app.post('/contests/:url/participantRecords', auth.optional, Contest.addParticipantRecord);
     
-    app.get('/contests/:id/participantsRecords', auth.required, Contest.getParticipantRecord);
+    app.get('/contests/:id/participantsRecords', auth.required, Contest.getParticipantRecords);
 
     app.post('/contests/:idContest/selectWinner/:idParticipantRecord', auth.required, Contest.setParticipantRecordWinner);
 };
