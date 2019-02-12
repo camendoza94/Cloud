@@ -22,7 +22,7 @@ db.sequelize.sync({force: true}).then(() => {
 // Routes
 require('./route/base.js')(app);
 require('./route/user.js')(app);
-require('./route/competition.js')(app);
+require('./route/contest.js/index.js')(app);
 
 
 let listener = app.listen(process.env.PORT || 8081, function () {

@@ -29,8 +29,8 @@ module.exports = (app) => {
         setPassword(finalUser, user.password);
         //TODO: Check if UUIDV4 for id is needed
         return User.create({
-                firstname: user.firstname,
-                lastname: user.lastname,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 email: finalUser.email,
                 hash: finalUser.hash,
                 salt: finalUser.salt

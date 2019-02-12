@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-	const Competition = sequelize.define('competition', {
+	const Contest = sequelize.define('contest', {
 	  name: {
         type: Sequelize.STRING,
         allowNull: false
@@ -12,11 +12,11 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         unique: true
       },
-      start_date: {
+      startDate: {
         type: Sequelize.DATE,
         allowNull: false
       },
-      end_date: {
+      endDate: {
         type: Sequelize.DATE,
         allowNull: false
       },
@@ -31,5 +31,5 @@ module.exports = (sequelize, Sequelize) => {
       }
 	});
 	
-	return Competition;
+	return Contest;
 }

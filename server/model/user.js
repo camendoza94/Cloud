@@ -1,9 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
 	const User = sequelize.define('user', {
-	  firstname: {
+	  firstName: {
         type: Sequelize.STRING,
 	  },
-	  lastname: {
+	  lastName: {
 		type: Sequelize.STRING
 	  },
 	  email: {

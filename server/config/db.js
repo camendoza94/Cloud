@@ -21,6 +21,6 @@ db.sequelize = sequelize;
  
 //Models/tables
 db.users = require('../model/user.js')(sequelize, Sequelize);
-db.competitions = require('../model/competition.js')(sequelize, Sequelize);
+db.contests = require('../model/contest.js/index.js')(sequelize, Sequelize);
  
 module.exports = db;
