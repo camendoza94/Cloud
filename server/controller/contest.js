@@ -24,5 +24,5 @@ exports.getParticipantRecord = (req, res, next) => {
 };
 
 exports.setParticipantRecordWinner = (req, res, next) => {
-    
+    //Use Contest.setWinner
 };
