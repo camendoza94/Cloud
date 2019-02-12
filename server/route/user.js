@@ -1,7 +1,7 @@
 const {setPassword, generateJWT, toAuthJSON} = require('../config/passport');
 const db = require('../config/db');
 const User = db.users;
-const Contest = db.contests; 
+const Contest = db.contests;
 const auth = require('../config/auth');
 const passport = require('passport');
 const uuidv4 = require('uuid/v4');
@@ -94,6 +94,15 @@ module.exports = (app) => {
     // Contest of the user with id :id
     app.get('/users/:id/contests', auth.required, (req, res) => {
         const {params: {id}} = req;
+        const userId = id;
+        const {payload: {id}} = req;
+        if(userId !== id) {
+            return res.status(401).json({
+                errors: {
+                    name: 'unauthorized',
+                },
+            });
+        }
 
         Contest.findAll({ where: {userId: id}}).then((contests) => {
             res.json({contests: contests});
@@ -106,9 +115,17 @@ module.exports = (app) => {
     app.post('/users/:id/contests', auth.required, (req, res) => {
         const {params: {id}} = req;
         const {body: {contest}} = req;
-        
         contest.userId = id;
-        
+
+        const {payload: {id}} = req;
+        if(contest.userId !== id) {
+            return res.status(401).json({
+                errors: {
+                    name: 'unauthorized',
+                },
+            });
+        }
+
         if (!contest.name) {
             return res.status(422).json({
                 errors: {

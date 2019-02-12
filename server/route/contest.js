@@ -1,22 +1,26 @@
 // Contests
 module.exports = (app) => {
-    app.get('/contests', auth.optional, (res, req) => {
+    app.get('/contests', auth.optional, (req, res) => {
 
     });
 
-    app.post('/contests/:url/participantRecords', auth.optional, (res, req) => {
+    app.delete('/contests/:id', auth.required, (req, res) => {
 
     });
 
-    app.delete('/contests/:id', auth.required, (res, req) => {
-
+    app.put('/contests/:id', auth.required, (req, res) => {
+    
     });
 
-    app.put('/contests/:id', auth.required, (res, req) => {
+    app.post('/contests/:url/participantRecords', auth.optional, (req, res) => {
     
     });
     
-    app.get('/contests/:id/participantsRecords', auth.required, (res, req) => {
-        
+    app.get('/contests/:id/participantsRecords', auth.required, (req, res) => {
+    
+    });
+
+    app.post('/contests/:idContest/selectWinner/:idParticipantRecord', auth.required, (req, res) => {
+    
     });
 };
