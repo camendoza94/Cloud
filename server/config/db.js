@@ -21,6 +21,17 @@ db.sequelize = sequelize;
  
 //Models/tables
 db.users = require('../model/user.js')(sequelize, Sequelize);
-db.contests = require('../model/contest.js/index.js')(sequelize, Sequelize);
- 
+db.contests = require('../model/contest.js')(sequelize, Sequelize);
+db.participantRecords = require('../model/participantRecord.js')(sequelize, Sequelize);
+
+// Associations
+// User - Contest
+db.users.hasMany(db.contests);
+db.contests.belongsTo(db.users);
+
+// Contest - ParticipantRecord
+db.contests.hasMany(db.participantRecords);
+db.participantRecords.belongsTo(db.contests);
+
+
 module.exports = db;
