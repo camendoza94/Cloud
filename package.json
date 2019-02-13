@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
@@ -13,7 +14,6 @@
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.4.0",
     "node-cron": "^2.0.3",
-    "nodemailer": "^5.1.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.8.0",

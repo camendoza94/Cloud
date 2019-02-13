@@ -1,12 +1,4 @@
-const mailer = require("nodemailer");
+const Emails = require('@sendgrid/mail');
 
-// Use Smtp Protocol to send Email
-const Emails = mailer.createTransport("SMTP",{
-                            service: "Gmail",
-                            auth: {
-                                user: "clouddevelop2019@gmail.com",
-                                pass: process.ENV.MAIL_PASSWORD
-                            }
-});
-
+Emails.setApiKey(process.env.SENDGRID_API_KEY);
 module.exports = Emails;
