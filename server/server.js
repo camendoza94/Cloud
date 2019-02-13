@@ -34,7 +34,7 @@ require('./route/participantRecord.js')(app);
 
 // TODO: Cron to convert file
 // For now sends and email
-cron.schedule('* 0 * * Wednesday', () => {
+cron.schedule('59 12 * * *', () => {
   console.log("---------------------");
   console.log("Running Cron Job");
   const mail = {
