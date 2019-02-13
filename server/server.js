@@ -3,6 +3,7 @@ require('dotenv').config();
 const Cors = require('cors');
 const bodyParser = require('body-parser');
 const express = require('express');
+const fileUpload = require('express-fileupload');
 
 let app = express();
 
@@ -11,6 +12,7 @@ require('./config/passport');
 app.use(Cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
+app.use(fileUpload());
 
 const db = require('./config/db.js');
   
@@ -18,6 +20,9 @@ const db = require('./config/db.js');
 db.sequelize.sync({force: true}).then(() => {
   console.log('Drop and Resync with { force: true }');
 });
+
+const {UPLOAD_PATH} = require('./constants');
+console.log(UPLOAD_PATH);
 
 // Routes
 require('./route/base.js')(app);

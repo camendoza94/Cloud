@@ -32,7 +32,7 @@ db.contests.belongsTo(db.users);
 // Contest - ParticipantRecord
 db.contests.hasMany(db.participantRecords);
 db.participantRecords.belongsTo(db.contests);
-db.contests.hasOne(db.participantRecords, {as: 'Winner'});
+db.contests.hasOne(db.participantRecords, {as: 'winner'});
 
 
 module.exports = db;
