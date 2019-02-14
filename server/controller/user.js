@@ -3,7 +3,6 @@ const db = require('../config/db');
 const User = db.users;
 const Contest = db.contests;
 const passport = require('passport');
-const uuidv4 = require('uuid/v4');
 
 
 exports.registerUser = (req, res, next) => {
@@ -26,7 +25,6 @@ exports.registerUser = (req, res, next) => {
     const finalUser = {email: user.email, hash: '', salt: ''};
 
     setPassword(finalUser, user.password);
-    //TODO: Check if UUIDV4 for id is needed
     return User.create({
             firstName: user.firstName,
             lastName: user.lastName,

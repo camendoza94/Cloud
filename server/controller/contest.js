@@ -47,12 +47,11 @@ exports.update = (req, res, next) => {
 };
 
 exports.addParticipantRecord = (req, res, next) => {
-    // TODO:
-    // add validations i.e closed contest
+    // TODO: add validations i.e closed contest
     const {body: {participantRecord}} = req;
     const contestId = req.params.id;
     
-    if (Object.keys(req.files).length == 0) {
+    if (Object.keys(req.files).length === 0) {
         res.status(422).json({
                             error: { 
                                     file: 'No files were uploaded.' 
