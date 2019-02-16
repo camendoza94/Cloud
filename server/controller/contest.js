@@ -20,6 +20,15 @@ exports.findById = (req, res, next) => {
     });
 };
 
+exports.findByURL = (req, res, next) => {
+    const {params:{url}} = req;
+    Contest.findOne({where: {url: url}}).then((contest) => {
+                            res.json({contest: contest});
+                        }).catch((err) => {
+                            return res.send(err.stack);
+    });
+};
+
 exports.delete = (req, res, next) => {
     const contestId = req.params.id;
     const userId = req.payload.id;

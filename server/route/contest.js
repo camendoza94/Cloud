@@ -11,6 +11,8 @@ module.exports = (app) => {
 
     app.put('/contests/:id', auth.required, Contest.update);
 
+    app.get('/contests/:url', auth.optional, Contest.findByURL);
+
     app.post('/contests/:url/participantRecords', auth.optional, Contest.addParticipantRecord);
     
     app.get('/contests/:id/participantsRecords', auth.optional, Contest.getParticipantRecords);
