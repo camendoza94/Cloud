@@ -13,13 +13,12 @@ class ParticipantRecordNew extends Component {
         const contestId = this.props.match.params.id;
         participantRecordService.createParticipantRecord(contestId, formData)
                 .then((response) => { 
-                    console.log(response.data);
+                    console.log(response);
                     alert('Your voice was submitted! Soon it will be available');
-                    this.props.history.push(`/contests/${contestId}/addParticipantRecord`);
+                    this.props.history.goBack();
                 }).catch((err) => {
-                    console.log(err.response.data);
-                    alert(`An error ocurred: ${err.response.data.error.contest}`);
-                    this.props.history.push(`/contests/${contestId}`);
+                    console.log(err);
+                   // window.location.reload();
                 })
     }
 

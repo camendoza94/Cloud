@@ -5,6 +5,7 @@ const {IN_PROGRESS, CONVERTED, CONVERTED_PATH, CONVERSION_FORMAT} = require('../
 
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
+const ms = require('mediaserver');
 
 exports.findAll = (req, res, next) => {
     ParticipantRecords.findAll().then((contests) => {
@@ -16,7 +17,7 @@ exports.findAll = (req, res, next) => {
 
 exports.findById = (req, res, next) => {
     const {params: {id}} = req;
-    ParticipantRecords.findById(id).then((contest) => {
+    ParticipantRecords.findByPk(id).then((contest) => {
         res.json({contest: contest});
     }).catch((err) => {
         return res.send(err.stack);
@@ -26,9 +27,13 @@ exports.findById = (req, res, next) => {
 exports.originalFile = (req, res, next) => {
     const {params: {id}} = req;
 
-    ParticipantRecords.findById(id).then((contest) => {
-        const originalFile = contest.originalFile;
-        res.sendFile(originalFile);
+    ParticipantRecords.findById(id).then((participantRecord) => {
+        const originalFile = participantRecord.originalFile;
+        if(originalFile){
+            ms.pipe(req, res, originalFile);
+        } else {
+            return res.sendStatus(400);
+        }
     }).catch((err) => {
         return res.send(err.stack);
     });
@@ -37,10 +42,10 @@ exports.originalFile = (req, res, next) => {
 exports.convertedFile = (req, res, next) => {
     const {params: {id}} = req;
 
-    ParticipantRecords.findById(id).then((contest) => {
-        const convertedFile = contest.convertedFile;
+    ParticipantRecords.findById(id).then((participantRecord) => {
+        const convertedFile = participantRecord.convertedFile;
         if(convertedFile){
-            res.sendFile(convertedFile);
+            ms.pipe(req, res, convertedFile);
         } else {
             return res.sendStatus(400);
         }

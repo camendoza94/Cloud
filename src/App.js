@@ -24,8 +24,9 @@ class App extends Component {
                             <div>
                                 <Route path="/login" component={Login}/>
                                 <Route path='/register' component={Register}/>
-                                <Route path='/contests/:url' component={ContestDetail}/>
+                                <Route exact path='/contests/:url' component={ContestDetail}/>
                                 <Route path='/contests/:id/addParticipantRecord' component={ParticipantRecordNew}/>
+                                <PrivateRoute exact path="/contests" component={HomePage}/>
                                 <PrivateRoute exact path="/" component={HomePage}/>
                                 <PrivateRoute exact path="/add" component={AddContest}/>
                                 <PrivateRoute exact path="/contests/:id/edit" component={ContestEdit}/>

@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const cron = require('node-cron');
-
+const path = require('path');
 
 let app = express();
 
@@ -15,6 +15,7 @@ app.use(Cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(fileUpload());
+app.use('/audio', express.static( path.join(__dirname, '/audio')));
 
 const db = require('./config/db.js');
 const ParticipantRecord = require('./controller/participantRecord');
@@ -29,6 +30,7 @@ require('./route/base.js')(app);
 require('./route/user.js')(app);
 require('./route/contest.js')(app);
 require('./route/participantRecord.js')(app);
+
 
 // Task to convert files
 // cron.schedule('59 12 * * *', () => {

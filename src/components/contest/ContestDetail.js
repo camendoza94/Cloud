@@ -54,7 +54,7 @@ class ContestDetail extends Component {
         const contest = (this.props.location.state && this.props.location.state.contest) || this.state.contest;
         const {participantRecords, loading} = this.state;
         return (
-            <div className="card">
+            <div className="card col-md-12 offset-md-3">
                 {contest ? <div>
                     <img className="card-img-top" src={contest.image} alt={contest.name}/>
                     <div className="card-body">
@@ -70,12 +70,12 @@ class ContestDetail extends Component {
                     </ul>
                 </div> : ''}
                 {loading ?
-                    <ReactLoading type="bars" color="#000000"/>
+                    <div align="center"><ReactLoading type="bars" color="#000000"/></div>
                     :
                     <ParticipantRecords user={user}
                                         participantRecords={participantRecords}/>}
                 {!user && contest &&
-                <Link className="btn btn-primary" to={`/contests/${contest.url}/addParticipantRecord`}>Add a
+                <Link className="btn btn-primary" to={`/contests/${contest.id}/addParticipantRecord`}>Add a
                     record</Link>}
                 {user && contest &&
                 <div className="btn btn-group">

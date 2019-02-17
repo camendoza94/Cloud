@@ -14,6 +14,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.4.0",
+    "mediaserver": "^0.1.1",
     "node-cron": "^2.0.3",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",

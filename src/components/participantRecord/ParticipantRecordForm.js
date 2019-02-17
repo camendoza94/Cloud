@@ -46,7 +46,7 @@ class ParticipantRecordForm extends Component {
 
 
     render() {
-        const { firstName, lastName, email, observations, audioFile, submitted, loading, error } = this.state;
+        const { firstName, lastName, email, audioFile, submitted, loading, error, observations } = this.state;
         return <div className="col-md-6 col-md-offset-3">
                     <form name="form" onSubmit={this.handleSubmit}>
                         <div className={'form-group' + (submitted && !firstName ? ' has-error' : '')}>
@@ -83,10 +83,10 @@ class ParticipantRecordForm extends Component {
                         </div>
                         <div className={'form-group' + (submitted && !observations ? ' has-error' : '')}>
                             <label htmlFor="observations">Observations</label>
-                            <textarea rows="5" className="form-control" name="observations" value={observations}
+                            <textarea className="form-control" name="observations" value={observations}
                                 onChange={this.handleChange}></textarea>
                             {submitted && !observations &&
-                            <div className="help-block">Audio file is required</div>
+                            <div className="help-block">Observations are required</div>
                             }
                         </div>
                         <div className="form-group">

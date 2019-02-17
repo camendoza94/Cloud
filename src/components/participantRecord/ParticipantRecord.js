@@ -10,7 +10,7 @@ class ParticipantRecord extends Component {
                     <div className="card">
                         <div className="card-body">
                             <h5 className="card-title">{participantRecord.email}</h5>
-                            <ul class="list-group list-group-flush">
+                            <ul className="list-group list-group-flush">
                                 <li className="list-group-item">{participantRecord.firstName}</li>
                                 <li className="list-group-item">{participantRecord.lastName}</li>
                                 <li className="list-group-item">{participantRecord.createdAt}</li>
@@ -25,9 +25,13 @@ class ParticipantRecord extends Component {
                                     className="btn btn-primary">Download Converted audio file</a>}
                             </div>
                             {participantRecord.state === CONVERTED &&
-                                <ReactPlayer url={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id}/convertedFile`}
-                                            playing={false}
-                                            controls={true} />}
+                                <div className="col-md-12">
+                                    <audio controls>
+                                    <source src={`${process.env.REACT_APP_ROOT_URL}${participantRecord.convertedFile.split('server')[1]}`}
+                                            type="audio/mp3"/>
+                                    Your browser does not support the audio element
+                                    </audio>
+                                </div>}
                         </div>
                     </div>
                 </div> 
