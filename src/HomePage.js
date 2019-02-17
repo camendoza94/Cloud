@@ -17,7 +17,7 @@ class HomePage extends Component {
         this.setState({
             user: JSON.parse(localStorage.getItem('user')),
         });
-        contestService.getAll().then(response => {
+        contestService.getAllByUser(this.state.user.id).then(response => {
             console.log(response);
             this.setState({contests: response.data.contests})
         });

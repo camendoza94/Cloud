@@ -88,9 +88,9 @@ exports.addParticipantRecord = (req, res, next) => {
 };
 
 exports.getParticipantRecords = (req, res, next) => {
-    const contestId = req.params.id;
+    const contestURL = req.params.url;
     
-    ParticipantRecords.findAll({where: {contestId: contestId}})
+    ParticipantRecords.findAll({where: {url: contestURL}})
                       .then((participantRecords) => {
                                 res.json({participantRecords: participantRecords});
                             }).catch((err) => {

@@ -3,6 +3,7 @@ import {Link} from "react-router-dom";
 import ParticipantRecords from './components/participantRecord/ParticipantRecords';
 import {participantRecordService} from './utils/participantRecord-service';
 import ReactLoading from 'react-loading';
+import { contestService } from './utils/contest-service';
 
 class ContestDetail extends Component {
 
@@ -16,17 +17,17 @@ class ContestDetail extends Component {
     }
 
     componentDidMount(){
-        const id = this.props.location.id;
-        participantRecordService.getParticipantRecords(id).then(response => {
+        const url = this.props.match.params.url;
+        participantRecordService.getParticipantRecords(url).then(response => {
             console.log(response);
             this.setState({participantRecords: response.data.participantRecords,
                            loading: false});
-        });
+        }).catch((err)=> console.log(err));
     }
 
     deleteContest(){
         const { contest } = this.props;
-        participantRecordService.deleteContest(contest.id).then(response => {
+        contestService.deleteContest(contest.id).then(response => {
             console.log(response);
             this.props.history.push('/');            
         });
