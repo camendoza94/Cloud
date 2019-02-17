@@ -86,7 +86,8 @@ exports.current = (req, res, next) => {
 exports.getContests = (req, res, next) => {
     const userId = req.params.id;
     const {payload: {id}} = req;
-    if(userId !== id) {
+    if(parseInt(userId) !== parseInt(id)) {
+        console.log("error");
         return res.status(401).json({
             errors: {
                 name: 'unauthorized',
@@ -104,10 +105,11 @@ exports.getContests = (req, res, next) => {
 exports.addContests = (req, res, next) => {
     const userId = req.params.id;
     const {body: {contest}} = req;
+    console.log(contest);
     contest.userId = userId;
 
     const {payload: {id}} = req;
-    if(userId !== id) {
+    if(parseInt(userId) !== parseInt(id)) {
         return res.status(401).json({
             errors: {
                 name: 'unauthorized',
@@ -184,7 +186,7 @@ exports.addContests = (req, res, next) => {
         });
     }
 
-    Contest.Create(contest).then((contest) => {
+    Contest.create(contest).then((contest) => {
         res.json({contest: contest});
     }).catch((err) => {
         return res.send(err.stack);

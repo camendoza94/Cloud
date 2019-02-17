@@ -56,4 +56,4 @@ function toAuthJSON(user) {
     };
 }
 
-module.exports = {setPassword, generateJWT, toAuthJSON, validatePassword};
+module.exports = {setPassword, generateJWT, toAuthJSON};

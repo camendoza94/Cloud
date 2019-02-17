@@ -3,18 +3,37 @@ import axios from 'axios';
 
 export const contestService = {
     getAll,
-    getAllByUser
+    addContest
 };
 
 function getAll() {
-    return axios.get(process.env.REACT_APP_ROOT_URL + "/contests", authHeader())
-        .then(contests => contests)
+    const id = JSON.parse(localStorage.getItem('user')).id;
+    return axios({
+        method: 'get',
+        url: process.env.REACT_APP_ROOT_URL + "/users/" + id + "/contests",
+        headers: authHeader()
+    }).then(contests => contests)
         .catch(err => err);
-
 }
 
-function getAllByUser(id){
-    return axios.get(`${process.env.REACT_APP_ROOT_URL}/${id}/contests`, authHeader())
-    .then(contests => contests)
-    .catch(err => err);
+function addContest(name, image, url, startDate, endDate, payment, text, recommendations) {
+    const id = JSON.parse(localStorage.getItem('user')).id;
+    return axios({
+        method: 'post',
+        url: process.env.REACT_APP_ROOT_URL + "/users/" + id + "/contests",
+        data: {
+            contest: {
+                name,
+                image,
+                url,
+                startDate,
+                endDate,
+                payment,
+                text,
+                recommendations
+            }
+        },
+        headers: authHeader()
+    }).then(contests => contests)
+        .catch(err => err);
 }
