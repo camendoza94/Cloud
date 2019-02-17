@@ -28,7 +28,6 @@ class ParticipantRecordForm extends Component {
 
         this.setState({submitted: true});
         const {firstName, lastName, email, observations} = this.state;
-        const contestId = this.props.contestId;
         // stop here if form is invalid
         if (!(firstName && lastName && email && observations && this.audioFile.files)) {
             return;
@@ -48,7 +47,7 @@ class ParticipantRecordForm extends Component {
 
 
     render() {
-        const { firstName, lastName, email, observations, audioFile } = this.state;
+        const { firstName, lastName, email, observations, audioFile, submitted, loading, error } = this.state;
         return <div className="col-md-6 col-md-offset-3">
                     <h2>Sumbit voice participation</h2>
                     <form name="form" onSubmit={this.handleSubmit}>

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import ParticipantRecordForm from './participantRecordForm';
+import ParticipantRecordForm from './ParticipantRecordForm';
 import { participantRecordService } from '../../utils/participantRecord-service';
 
 class ParticipantRecordNew extends Component {

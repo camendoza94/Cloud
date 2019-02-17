@@ -6,8 +6,8 @@ import PrivateRoute from "./routing/PrivateRoute";
 import HomePage from './HomePage';
 import Login from './Login';
 import Register from "./Register";
-import ContestDetail from "./ContestDetail";
-import AddContest from "./AddContest";
+import ContestDetail from "./components/contest/ContestDetail";
+import AddContest from "./components/contest/AddContest";
 import ContestEdit from './components/contest/ContestEdit';
 import ParticipantRecordNew from './components/participantRecord/ParticipantRecordNew';
 

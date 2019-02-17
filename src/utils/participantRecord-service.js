@@ -1,4 +1,3 @@
-import {authHeader} from './auth-header';
 import axios from 'axios';
 
 export const participantRecordService = {
