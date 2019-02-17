@@ -8,24 +8,28 @@ class HomePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            contests: []
+            contests: [],
+            user: {}
         };
     }
 
     componentDidMount() {
+        this.setState({
+            user: JSON.parse(localStorage.getItem('user')),
+        });
         contestService.getAll().then(response => {
             this.setState({contests: response.data.contests})
         });
     }
 
     render() {
-        const {contests} = this.state;
+        const {contests, user} = this.state;
         return (
             <div className="col-md-6 col-md-offset-3">
                 <h1>Hi!</h1>
                 <Link to='/add' className="btn btn-success">Add</Link>
                 {contests.map((contest, id) => {
-                    return <Contest info={contest} key={id} id={id}/>
+                    return <Contest contest={contest} user={user} key={id} id={id}/>
                 })}
                 <p>
                     <Link to="/login">Logout</Link>

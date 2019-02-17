@@ -3,14 +3,23 @@ import axios from 'axios';
 
 export const contestService = {
     getAll,
-   deleteContest,
-   addContest
+    deleteContest,
+    addContest,
+    getByURL
 };
 
+function getByURL(url) {
+    return axios.get(`${process.env.REACT_APP_ROOT_URL}/contests/${url}`, authHeader());
+}
 
-function deleteContest(id){
-    return axios.delete(`${process.env.REACT_APP_ROOT_URL}/contest/${id}`, authHeader());
-};
+function deleteContest(id) {
+    return axios({
+        method: 'delete',
+        url: `${process.env.REACT_APP_ROOT_URL}/contests/${id}`,
+        headers: authHeader()
+    }).then(contests => contests)
+        .catch(err => err);
+}
 
 function getAll() {
     const id = JSON.parse(localStorage.getItem('user')).id;

@@ -5,8 +5,8 @@ export const participantRecordService = {
     getParticipantRecords
 };
 
-function getParticipantRecords(contestURL) {
-    return axios.get(`${process.env.REACT_APP_ROOT_URL}/contests/${contestURL}/participantRecords`);
+function getParticipantRecords(contestId) {
+    return axios.get(`${process.env.REACT_APP_ROOT_URL}/contests/${contestId}/participantRecords`);
 }
 
 function createParticipantRecord(contestURL, participantRecordForm){
