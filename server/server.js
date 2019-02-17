@@ -31,11 +31,11 @@ require('./route/contest.js')(app);
 require('./route/participantRecord.js')(app);
 
 // Task to convert files
-cron.schedule('59 12 * * *', () => {
-  console.log("---------------------");
-  console.log("Running Cron Job");
-  ParticipantRecord.convertFiles();
-});
+// cron.schedule('59 12 * * *', () => {
+//   console.log("---------------------");
+//   console.log("Running Cron Job");
+//   ParticipantRecord.convertFiles();
+// });
 
 let listener = app.listen(process.env.PORT || 8081, function () {
     console.log('App running on http://localhost:' + listener.address().port);

@@ -56,41 +56,52 @@ exports.update = (req, res, next) => {
 };
 
 exports.addParticipantRecord = (req, res, next) => {
-    // TODO: add validations i.e closed contest
-    const {body: {participantRecord}} = req;
+    const participantRecord = req.body;
     const contestId = req.params.id;
     
     if (Object.keys(req.files).length === 0) {
-        res.status(422).json({
+        return res.status(422).json({
                             error: { 
                                     file: 'No files were uploaded.' 
                                 }});
     }
 
-    const fileAudio = req.files.audio;
+    const fileAudio = req.files.originalFile;
     const savePath = `${UPLOAD_PATH}${fileAudio.name}`;
 
     participantRecord.contestId = contestId;
     participantRecord.originalFile = savePath;
     participantRecord.status = IN_PROGRESS;
 
-    fileAudio.mv(savePath, (err) => {
+    Contest.findByPk(contestId).then((contest) => {
+        const endDate = new Date(contest.endDate);
+        if (endDate < new Date()){
+            return res.status(422).json({
+                error: { 
+                        contest: 'Contest already ended.' 
+                    }});
+        }
+        fileAudio.mv(savePath, (err) => {
         if (err){
-            res.send(err.stack);
+            return res.send(err.stack);
         }
         ParticipantRecords.create(participantRecord)
                       .then((participantRecord) => {
-                                res.json({participantRecord: participantRecord});
+                                return res.json({participantRecord: participantRecord});
                             }).catch((err) => {
-                                res.send(err.stack);
+                                return res.send(err.stack);
                         });
-    });
+        });
+        }).catch((err)=>{
+           return res.send(err.stack);
+        });
+
 };
 
 exports.getParticipantRecords = (req, res, next) => {
-    const contestURL = req.params.url;
+    const contestId = req.params.id;
     
-    ParticipantRecords.findAll({where: {url: contestURL}})
+    ParticipantRecords.findAll({where: {contestId: contestId}})
                       .then((participantRecords) => {
                                 res.json({participantRecords: participantRecords});
                             }).catch((err) => {
