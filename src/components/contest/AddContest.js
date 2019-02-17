@@ -5,16 +5,16 @@ import {contestService} from "../../utils/contest-service";
 class AddContest extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            name: '',
-            image: '',
-            url: '',
-            startDate: '',
-            endDate: '',
-            payment: '',
-            text: '',
-            recommendations: '',
+            name: (this.props.location.state && this.props.location.state.name) || '',
+            image: (this.props.location.state && this.props.location.state.image) || '',
+            url: (this.props.location.state && this.props.location.state.url) || '',
+            startDate: (this.props.location.state && this.props.location.state.startDate) || '',
+            endDate: (this.props.location.state && this.props.location.state.endDate) || '',
+            payment: (this.props.location.state && this.props.location.state.payment) || '',
+            text: (this.props.location.state && this.props.location.state.text) || '',
+            recommendations: (this.props.location.state && this.props.location.state.recommendations) || '',
+            edit: (this.props.location.state && this.props.location.state.edit) || false,
             submitted: false,
             loading: false,
             error: ''
@@ -33,7 +33,7 @@ class AddContest extends Component {
         e.preventDefault();
 
         this.setState({submitted: true});
-        const {name, image, url, startDate, endDate, payment, text, recommendations} = this.state;
+        const {name, image, url, startDate, endDate, payment, text, recommendations, edit} = this.state;
 
         // stop here if form is invalid
         if (!(name && image && url && startDate && endDate && payment && text && recommendations)) {
@@ -41,16 +41,26 @@ class AddContest extends Component {
         }
 
         this.setState({loading: true});
-
-        contestService.addContest(name, image, url, startDate, endDate, payment, text, recommendations)
-            .then(() => {
-                const {from} = this.props.location.state || {from: {pathname: "/"}};
-                this.props.history.push(from);
-            })
-            .catch(err => {
-                    this.setState({error: err.toString(), loading: false});
-                }
-            )
+        if (edit) {
+            contestService.updateContest(name, image, url, startDate, endDate, payment, text, recommendations)
+                .then(() => {
+                    this.props.history.push({pathname: "/"});
+                })
+                .catch(err => {
+                        this.setState({error: err.toString(), loading: false});
+                    }
+                )
+        } else {
+            contestService.addContest(name, image, url, startDate, endDate, payment, text, recommendations)
+                .then(() => {
+                    const {from} = this.props.location.state || {from: {pathname: "/"}};
+                    this.props.history.push(from);
+                })
+                .catch(err => {
+                        this.setState({error: err.toString(), loading: false});
+                    }
+                )
+        }
 
     }
 
@@ -125,7 +135,7 @@ class AddContest extends Component {
                         }
                     </div>
                     <div className="form-group">
-                        <button className="btn btn-primary" disabled={loading}>Add</button>
+                        <button className="btn btn-primary" disabled={loading}>Save</button>
                         {loading &&
                         <img
                             src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
