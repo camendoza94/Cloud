@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Link} from "react-router-dom";
 import ParticipantRecords from './components/participantRecord/ParticipantRecords';
+import {participantRecordService} from './utils/participantRecord-service';
+import ReactLoading from 'react-loading';
 
 class ContestDetail extends Component {
 

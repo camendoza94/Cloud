@@ -9,6 +9,7 @@ import Register from "./Register";
 import ContestDetail from "./ContestDetail";
 import AddContest from "./AddContest";
 import ContestEdit from './components/contest/ContestEdit';
+import ParticipantRecordNew from './components/participantRecord/ParticipantRecordNew';
 
 require('dotenv').config();
 

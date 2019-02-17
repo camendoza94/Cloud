@@ -6,7 +6,7 @@ export const participantRecordService = {
 };
 
 function getAll(contestId) {
-    return axios.get(`${REACT_APP_ROOT_URL}/contests/${contestId}/participantRecords`, authHeader())
+    return axios.get(`${process.env.REACT_APP_ROOT_URL}/contests/${contestId}/participantRecords`, authHeader())
         .then(contests => contests)
         .catch(err => err);
 

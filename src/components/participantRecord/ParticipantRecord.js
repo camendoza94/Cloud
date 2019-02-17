@@ -20,11 +20,11 @@ class ParticipantRecord extends Component {
                                 {user &&
                                     <a href={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id}/originalFile/download`} 
                                     className="btn btn-danger">Download Original audio file</a>}
-                                {user && state === CONVERTED && 
+                                {user && participantRecord.state === CONVERTED && 
                                     <a href={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id}/convertedFile/download`}
                                     className="btn btn-primary">Download Converted audio file</a>}
                             </div>
-                            {state === CONVERTED &&
+                            {participantRecord.state === CONVERTED &&
                                 <ReactPlayer url={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id}/convertedFile`}
                                             playing={false}
                                             controls={true} />}

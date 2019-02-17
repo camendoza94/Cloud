@@ -1,1 +1,1 @@
-export default CONVERTED = 'Convertida';
+export const CONVERTED = 'Convertida';
