@@ -33,7 +33,7 @@ exports.registerUser = (req, res, next) => {
             salt: finalUser.salt
         }).then( (newUser) => {
             user.token = generateJWT(newUser);
-            res.json({user: toAuthJSON(finalUser)});
+            res.json({user: toAuthJSON(newUser)});
         }).catch((err) => {
             return res.send(err.stack);
         });
@@ -87,7 +87,6 @@ exports.getContests = (req, res, next) => {
     const userId = req.params.id;
     const {payload: {id}} = req;
     if(parseInt(userId) !== parseInt(id)) {
-        console.log("error");
         return res.status(401).json({
             errors: {
                 name: 'unauthorized',
@@ -105,7 +104,6 @@ exports.getContests = (req, res, next) => {
 exports.addContests = (req, res, next) => {
     const userId = req.params.id;
     const {body: {contest}} = req;
-    console.log(contest);
     contest.userId = userId;
 
     const {payload: {id}} = req;
