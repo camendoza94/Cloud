@@ -2,8 +2,12 @@ import React, {Component} from 'react';
 import './App.css';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import PrivateRoute from "./routing/PrivateRoute";
+
 import HomePage from './HomePage';
 import Login from './Login';
+import Register from "./Register";
+import ContestDetail from "./ContestDetail";
+import AddContest from "./AddContest";
 
 require('dotenv').config();
 
@@ -18,6 +22,9 @@ class App extends Component {
                             <div>
                                 <PrivateRoute exact path="/" component={HomePage}/>
                                 <Route path="/login" component={Login}/>
+                                <Route path='/register' component={Register}/>
+                                <Route path='/contests/:id' component={ContestDetail}/>
+                                <PrivateRoute exact path="/add" component={AddContest}/>
                             </div>
                         </Router>
                     </div>

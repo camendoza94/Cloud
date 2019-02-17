@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 
 import {contestService} from './utils/contest-service';
+import Contest from "./Contest";
 
 class HomePage extends Component {
     constructor(props) {
@@ -16,14 +17,21 @@ class HomePage extends Component {
         this.setState({
             user: JSON.parse(localStorage.getItem('user')),
         });
-        contestService.getAll().then(contest => this.setState({contest}));
+        contestService.getAll().then(response => {
+            console.log(response);
+            this.setState({contests: response.data.contests})
+        });
     }
 
     render() {
-        const {user} = this.state;
+        const {user, contests} = this.state;
         return (
             <div className="col-md-6 col-md-offset-3">
                 <h1>Hi {user.firstName}!</h1>
+                <Link to='/add' className="btn btn-success">Add</Link>
+                {contests.map((contest, id) => {
+                    return <Contest info={contest} key={id} id={id}/>
+                })}
                 <p>
                     <Link to="/login">Logout</Link>
                 </p>

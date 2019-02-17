@@ -28,7 +28,7 @@ exports.registerUser = (req, res, next) => {
     return User.create({
             firstName: user.firstName,
             lastName: user.lastName,
-            email: finalUser.email,
+            email: user.email,
             hash: finalUser.hash,
             salt: finalUser.salt
         }).then( (newUser) => {
