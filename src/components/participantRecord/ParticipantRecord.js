@@ -5,16 +5,15 @@ import ReactPlayer from 'react-player';
 class ParticipantRecord extends Component {
     render() {
         const {user, participantRecord} = this.props;
-        return (
-                <div className="col-sm-12">
+        return (<>{((!user && participantRecord.state == CONVERTED) || user) && <div className="col-sm-12">
                     <div className="card">
-                        <div className="card-body">
+                        <div className="card-body text-center">
                             <h5 className="card-title">{participantRecord.email}</h5>
                             <ul className="list-group list-group-flush">
                                 <li className="list-group-item">{participantRecord.firstName}</li>
                                 <li className="list-group-item">{participantRecord.lastName}</li>
                                 <li className="list-group-item">{participantRecord.createdAt}</li>
-                                <li className="list-group-item">{participantRecord.state}</li>
+                                {user && <li className="list-group-item">{participantRecord.state}</li>}
                             </ul>
                             <div className="btn btn-group">
                                 {user &&
@@ -32,9 +31,9 @@ class ParticipantRecord extends Component {
                                     Your browser does not support the audio element
                                     </audio>
                                 </div>}
+                            </div>
                         </div>
-                    </div>
-                </div> 
+                    </div>}</>
         );
     }
 }
