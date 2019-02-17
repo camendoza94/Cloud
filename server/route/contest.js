@@ -15,7 +15,7 @@ module.exports = (app) => {
 
     app.post('/contests/:url/participantRecords', auth.optional, Contest.addParticipantRecord);
     
-    app.get('/contests/:id/participantsRecords', auth.optional, Contest.getParticipantRecords);
+    app.get('/contests/:id/participantRecords', auth.optional, Contest.getParticipantRecords);
 
     app.post('/contests/:idContest/selectWinner/:idParticipantRecord', auth.required, Contest.setParticipantRecordWinner);
 

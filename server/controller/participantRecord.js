@@ -35,47 +35,81 @@ exports.originalFile = (req, res, next) => {
 };
 
 exports.convertedFile = (req, res, next) => {
-    // TODO: has to manage the status of the
-    // participantRecord and check if there
-    // is a convertedFile
     const {params: {id}} = req;
 
     ParticipantRecords.findById(id).then((contest) => {
         const convertedFile = contest.convertedFile;
-        res.sendFile(convertedFile);
+        if(convertedFile){
+            res.sendFile(convertedFile);
+        } else {
+            return res.sendStatus(400);
+        }
     }).catch((err) => {
         return res.send(err.stack);
     });
-
-    exports.convertFiles = () => {
-        ParticipantRecords.findAll({where: {state: IN_PROGRESS}}).then((records) => {
-            records.map((record) => {
-                //Convert file
-                const fileName = path.basename(record.convertedFile);
-                const convertedFile = `${CONVERTED_PATH}${fileName}`;
-                ffmpeg(record.originalFile).toFormat(CONVERSION_FORMAT)
-                    .on('end', (result) => {
-                        console.log(`End: ${result}`);
-                        // Change state of participantRecord
-                        ParticipantRecords.update({state: CONVERTED, convertedFile: convertedFile, where: {id: record.id}})
-                            .then((record) => {
-                                console.log(`Status change for record ${record.id}`);
-                                // Email
-                                const participantEmail = record.email;
-                                sendEmail(participantEmail);
-                            })
-                            .catch((err) => {
-                                console.log(err.stack);
-                            });
-                    })
-                    .on('error', (err) => {
-                        console.log(`Error: ${err.message}`);
-                    })
-                    .save(convertedFile);
-            });
-        }).catch((err) => {
-            console.log(err.stack);
-        });
-    }
-
 };
+
+exports.originalFileDownload = (req, res, next) => {
+    const {params: {id}} = req;
+
+    ParticipantRecords.findById(id).then((contest) => {
+        const originalFile = contest.originalFile;
+        res.download(originalFile, (err) => {
+            if (err){
+                return res.send(err.stack);
+            }
+        });
+    }).catch((err) => {
+        return res.send(err.stack);
+    });
+};
+
+exports.convertedFileDownload = (req, res, next) => {
+    const {params: {id}} = req;
+
+    ParticipantRecords.findById(id).then((contest) => {
+        const convertedFile = contest.convertedFile;
+        if (convertedFile){
+            res.download(convertedFile, (err) => {
+                if (err){
+                    return res.send(err.stack);
+                }
+            });
+        } else {
+            return res.sendStatus(400);
+        }
+    }).catch((err) => {
+        return res.send(err.stack);
+    });
+};
+
+exports.convertFiles = () => {
+    ParticipantRecords.findAll({where: {state: IN_PROGRESS}}).then((records) => {
+        records.map((record) => {
+            //Convert file
+            const fileName = path.basename(record.convertedFile);
+            const convertedFile = `${CONVERTED_PATH}${fileName}`;
+            ffmpeg(record.originalFile).toFormat(CONVERSION_FORMAT)
+                .on('end', (result) => {
+                    console.log(`End: ${result}`);
+                    // Change state of participantRecord
+                    ParticipantRecords.update({state: CONVERTED, convertedFile: convertedFile, where: {id: record.id}})
+                        .then((record) => {
+                            console.log(`Status change for record ${record.id}`);
+                            // Email
+                            const participantEmail = record.email;
+                            sendEmail(participantEmail);
+                        })
+                        .catch((err) => {
+                            console.log(err.stack);
+                        });
+                })
+                .on('error', (err) => {
+                    console.log(`Error: ${err.message}`);
+                })
+                .save(convertedFile);
+        });
+    }).catch((err) => {
+        console.log(err.stack);
+    });
+}

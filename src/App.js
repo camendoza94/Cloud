@@ -8,6 +8,7 @@ import Login from './Login';
 import Register from "./Register";
 import ContestDetail from "./ContestDetail";
 import AddContest from "./AddContest";
+import ContestEdit from './components/contest/ContestEdit';
 
 require('dotenv').config();
 
@@ -20,11 +21,13 @@ class App extends Component {
                     <div className="col-sm-8 col-sm-offset-2">
                         <Router>
                             <div>
-                                <PrivateRoute exact path="/" component={HomePage}/>
                                 <Route path="/login" component={Login}/>
                                 <Route path='/register' component={Register}/>
-                                <Route path='/contests/:id' component={ContestDetail}/>
+                                <Route path='/contests/:url' component={ContestDetail}/>
+                                <Route path='/contests/:url/addParticipantRecord' component={ParticipantRecordNew}/>
+                                <PrivateRoute exact path="/" component={HomePage}/>
                                 <PrivateRoute exact path="/add" component={AddContest}/>
+                                <PrivateRoute exact path="/contests/:id/edit" component={ContestEdit}/>
                             </div>
                         </Router>
                     </div>
