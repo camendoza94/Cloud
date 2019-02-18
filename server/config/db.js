@@ -30,7 +30,7 @@ db.users.hasMany(db.contests);
 db.contests.belongsTo(db.users);
 
 // Contest - ParticipantRecord
-db.contests.hasMany(db.participantRecords);
+db.contests.hasMany(db.participantRecords, {onDelete: 'CASCADE'});
 db.participantRecords.belongsTo(db.contests);
 db.contests.hasOne(db.participantRecords, {as: 'winner'});
 

@@ -25,15 +25,17 @@ class HomePage extends Component {
     render() {
         const {contests, user} = this.state;
         return (
-            <div className="col-md-6 col-md-offset-3">
+            <div className="col-md-12 offset-md-3">
                 <h1>Hi!</h1>
-                <Link to='/add' className="btn btn-success">Add</Link>
+                <div className="row col-md-3 offset-md-9">
+                    <Link to='/add' className="btn btn-success">Add</Link>
+                    <Link to="/login">Logout</Link>
+                </div>
+                <div>
                 {contests.map((contest, id) => {
                     return <Contest contest={contest} user={user} key={id} id={id}/>
                 })}
-                <p>
-                    <Link to="/login">Logout</Link>
-                </p>
+                </div>
             </div>
         );
     }

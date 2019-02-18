@@ -1,6 +1,6 @@
 const db = require('../config/db');
 const ParticipantRecords = db.participantRecords;
-const sendEmail = require('../config/mailer');
+const {sendEmail} = require('../config/mailer');
 const {IN_PROGRESS, CONVERTED, CONVERTED_PATH, CONVERSION_FORMAT} = require('../constants');
 
 const ffmpeg = require('fluent-ffmpeg');
@@ -90,19 +90,25 @@ exports.convertedFileDownload = (req, res, next) => {
 
 exports.convertFiles = () => {
     ParticipantRecords.findAll({where: {state: IN_PROGRESS}}).then((records) => {
+
         records.map((record) => {
             //Convert file
-            const fileName = path.basename(record.convertedFile);
-            const convertedFile = `${CONVERTED_PATH}${fileName}`;
-            ffmpeg(record.originalFile).toFormat(CONVERSION_FORMAT)
+            console.log(record)
+            const fileName = path.basename(record.dataValues.originalFile).split('.');
+            fileName.pop();
+            const convertedFile = `${CONVERTED_PATH}${fileName}.mp3`;
+            console.log(convertedFile);
+            const recordId = record.dataValues.id;
+            const participantEmail = record.dataValues.email;
+                            
+            ffmpeg(record.dataValues.originalFile).toFormat(CONVERSION_FORMAT)
                 .on('end', (result) => {
                     console.log(`End: ${result}`);
                     // Change state of participantRecord
-                    ParticipantRecords.update({state: CONVERTED, convertedFile: convertedFile, where: {id: record.id}})
+                    ParticipantRecords.update({state: CONVERTED, convertedFile: convertedFile}, {where: {id: recordId} } )
                         .then((record) => {
-                            console.log(`Status change for record ${record.id}`);
+                            console.log(`Status change for record ${recordId}`);
                             // Email
-                            const participantEmail = record.email;
                             sendEmail(participantEmail);
                         })
                         .catch((err) => {

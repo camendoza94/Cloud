@@ -38,6 +38,7 @@ class ParticipantRecordForm extends Component {
         formData.append('firstName', firstName);
         formData.append('lastName', lastName);
         formData.append('email', email);
+        formData.append('observations', observations);
 
         this.setState({loading: true});
 

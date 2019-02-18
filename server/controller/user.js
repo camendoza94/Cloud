@@ -76,7 +76,7 @@ exports.logIn = (req, res, next) => {
 exports.current = (req, res, next) => {
     const {payload: {id}} = req;
 
-    User.findById(id).then((user) => {
+    User.findByPk(id).then((user) => {
                             res.json({user: toAuthJSON(user)});
                         }).catch((err) => {
                             return res.send(err.stack);
