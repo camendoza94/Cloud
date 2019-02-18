@@ -11,7 +11,7 @@ class ParticipantRecord extends Component {
                             <ul className="list-group list-group-flush">
                                 <li className="list-group-item">{participantRecord.firstName}</li>
                                 <li className="list-group-item">{participantRecord.lastName}</li>
-                                <li className="list-group-item">{participantRecord.createdAt}</li>
+                                <li className="list-group-item">{participantRecord.createdAt.substr(0, 10)}</li>
                                 {user && <li className="list-group-item">{participantRecord.state}</li>}
                             </ul>
                             <div className="btn btn-group">

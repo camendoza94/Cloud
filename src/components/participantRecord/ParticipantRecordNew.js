@@ -23,7 +23,7 @@ class ParticipantRecordNew extends Component {
     }
 
     render() {
-        return  <div className="col-md-12 offset-md-5">
+        return  <div className="col-md-12 offset-md-3">
                     <h2>Add new audio voice</h2>
                     <ParticipantRecordForm onSubmitForm={this.createParticipantRecord} />
                 </div>

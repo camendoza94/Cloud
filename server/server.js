@@ -31,6 +31,8 @@ require('./route/user.js')(app);
 require('./route/contest.js')(app);
 require('./route/participantRecord.js')(app);
 
+// Initial conversion when starting
+ParticipantRecord.convertFiles();
 
 // Task to convert files
 cron.schedule('22 18 * * *', () => {

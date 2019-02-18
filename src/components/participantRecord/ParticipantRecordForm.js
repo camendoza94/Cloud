@@ -48,7 +48,7 @@ class ParticipantRecordForm extends Component {
 
     render() {
         const { firstName, lastName, email, audioFile, submitted, loading, error, observations } = this.state;
-        return <div className="col-md-6 col-md-offset-3">
+        return <div className="col-md-6">
                     <form name="form" onSubmit={this.handleSubmit}>
                         <div className={'form-group' + (submitted && !firstName ? ' has-error' : '')}>
                             <label htmlFor="firstName">First name</label>

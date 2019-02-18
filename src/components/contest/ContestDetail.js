@@ -61,8 +61,8 @@ class ContestDetail extends Component {
                         <h5 className="card-title">{contest.name}</h5>
                     </div>
                     <ul className="list-group list-group-flush">
-                        <li className="list-group-item"><b>Fecha de inicio:</b> {contest.startDate}</li>
-                        <li className="list-group-item"><b>Fecha de finalización:</b> {contest.endDate}</li>
+                        <li className="list-group-item"><b>Fecha de inicio:</b> {contest.startDate.substr(0, 10)}</li>
+                        <li className="list-group-item"><b>Fecha de finalización:</b> {contest.endDate.substr(0, 10)}</li>
                         <li className="list-group-item"><b>Texto:</b> {contest.text}</li>
                         <li className="list-group-item"><b>Recomendaciones: </b> {contest.recommendations}</li>
                         <li className="list-group-item"><b>Pago: </b>{contest.payment}</li>
