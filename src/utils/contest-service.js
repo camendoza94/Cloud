@@ -22,11 +22,11 @@ function deleteContest(id) {
         .catch(err => err);
 }
 
-function getAll() {
+function getAll(page) {
     const id = JSON.parse(localStorage.getItem('user')).id;
     return axios({
         method: 'get',
-        url: process.env.REACT_APP_ROOT_URL + "/users/" + id + "/contests",
+        url: `${process.env.REACT_APP_ROOT_URL}/users/${id}/contests?page=${page}`,
         headers: authHeader()
     }).then(contests => contests)
         .catch(err => err);
@@ -36,7 +36,7 @@ function addContest(name, image, url, startDate, endDate, payment, text, recomme
     const id = JSON.parse(localStorage.getItem('user')).id;
     return axios({
         method: 'post',
-        url: process.env.REACT_APP_ROOT_URL + "/users/" + id + "/contests",
+        url: `${process.env.REACT_APP_ROOT_URL}/users/${id}/contests`,
         data: {
             contest: {
                 name,
@@ -58,7 +58,7 @@ function updateContest(name, image, url, startDate, endDate, payment, text, reco
     const id = JSON.parse(localStorage.getItem('user')).id;
     return axios({
         method: 'put',
-        url: process.env.REACT_APP_ROOT_URL + "/contests/" + id,
+        url: `${process.env.REACT_APP_ROOT_URL}/contests/${id}`,
         data: {
             contest: {
                 name,

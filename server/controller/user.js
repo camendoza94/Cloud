@@ -94,7 +94,10 @@ exports.getContests = (req, res, next) => {
         });
     }
 
-    Contest.findAll({ where: {userId: id}}).then((contests) => {
+    const page = req.query.page || 1;
+    const paginate = req.query.paginate || 50;
+
+    Contest.paginate({ where: {userId: id}, page: page, paginate: paginate}).then((contests) => {
         res.json({contests: contests});
     }).catch((err) => {
         return res.send(err.stack);

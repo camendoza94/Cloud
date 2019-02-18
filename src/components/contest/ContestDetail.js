@@ -11,9 +11,13 @@ class ContestDetail extends Component {
         super(props);
         this.state = {
             participantRecords: [],
+            contest: {},
+            page: 1,
+            totalPages: 1,
             loading: true
         };
         this.deleteContest = this.deleteContest.bind(this);
+        this.getParticipantRecords = this.getParticipantRecords.bind(this);
     }
 
 
@@ -24,7 +28,7 @@ class ContestDetail extends Component {
             const url = this.props.match.params.url;
             contestService.getByURL(url).then(response => {
                 contestId = response.data.contest.id;
-                this.setState({contest: response.data.contest}, this.getParticipantRecords(contestId))
+                this.setState({contest: response.data.contest}, this.getParticipantRecords(contestId, this.state.page))
             }).catch((err) => console.log(err))
         } else {
             this.getParticipantRecords(contestId);
@@ -32,10 +36,13 @@ class ContestDetail extends Component {
 
     }
 
-    getParticipantRecords(contestId) {
-        participantRecordService.getParticipantRecords(contestId).then(response => {
+    getParticipantRecords(contestId, page) {
+        page = page || 1;
+        participantRecordService.getParticipantRecords(contestId, page).then(response => {
             this.setState({
-                participantRecords: response.data.participantRecords,
+                participantRecords: response.data.participantRecords.docs,
+                page: page,
+                totalPages: response.data.participantRecords.pages,
                 loading: false
             });
         }).catch((err) => console.log(err));
@@ -52,7 +59,7 @@ class ContestDetail extends Component {
     render() {
         const user = this.props.location.state && this.props.location.state.user;
         const contest = (this.props.location.state && this.props.location.state.contest) || this.state.contest;
-        const {participantRecords, loading} = this.state;
+        const {participantRecords, loading, page, totalPages} = this.state;
         return (
             <div className="card col-md-12">
                 {contest ? <div>
@@ -97,6 +104,22 @@ class ContestDetail extends Component {
                     </Link>
                     <button className="btn btn-danger" onClick={this.deleteContest}>Delete contest</button>
                 </div>}
+                <div className="container">
+                    <ul className="pagination">
+                    {page !== 1 &&
+                    <li className="page-item">
+                        <button className="page-link" onClick={()=>{this.getParticipantRecords(contest.id, page - 1)}}>
+                        &#x3C;
+                        </button>
+                    </li>}
+                    {page !== totalPages &&
+                    <li className="page-item">
+                        <button className="page-link" onClick={()=>{this.getParticipantRecords(contest.id, page + 1)}}>
+                        &#x3E;
+                        </button>
+                    </li>}
+                    </ul>
+                </div>
                 {user && 
                     <Link to="/contests">Volver</Link>}
             </div>

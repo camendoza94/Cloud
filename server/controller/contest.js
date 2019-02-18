@@ -131,8 +131,10 @@ exports.addParticipantRecord = (req, res, next) => {
 
 exports.getParticipantRecords = (req, res, next) => {
     const contestId = req.params.id;
-    
-    ParticipantRecords.findAll({where: {contestId}, order: [['createdAt', 'DESC']]})
+    const page = req.query.page || 1;
+    const paginate = req.query.paginate || 50;
+    ParticipantRecords.paginate({where: {contestId}, order: [['createdAt', 'DESC']],
+                                page: page, paginate: paginate})
     .then((participantRecords) => {
         res.json({participantRecords: participantRecords});
     }).catch((err) => {

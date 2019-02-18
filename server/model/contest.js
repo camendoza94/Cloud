@@ -1,5 +1,7 @@
+const sequelizePaginate = require('sequelize-paginate');
+
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define('contest', {
+    const Contest = sequelize.define('contest', {
         name: {
             type: Sequelize.STRING,
             allowNull: false
@@ -30,4 +32,8 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TEXT
         }
     });
+
+    sequelizePaginate.paginate(Contest)
+
+    return Contest;
 };

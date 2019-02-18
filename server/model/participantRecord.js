@@ -1,5 +1,7 @@
+const sequelizePaginate = require('sequelize-paginate');
+
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define('participantRecord', {
+    const ParticipantRecord = sequelize.define('participantRecord', {
         state: {
             type: Sequelize.STRING,
             allowNull: false,
@@ -23,4 +25,8 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TEXT
         }
     });
+
+    sequelizePaginate.paginate(ParticipantRecord);
+
+    return ParticipantRecord;
 };

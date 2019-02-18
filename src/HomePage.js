@@ -9,21 +9,29 @@ class HomePage extends Component {
         super(props);
         this.state = {
             contests: [],
-            user: {}
+            user: {},
+            page: 1,
+            totalPages: 1
         };
+        this.getContests = this.getContests.bind(this);
     }
 
     componentDidMount() {
         this.setState({
             user: JSON.parse(localStorage.getItem('user')),
         });
-        contestService.getAll().then(response => {
-            this.setState({contests: response.data.contests})
+        this.getContests(this.state.page);
+    }
+
+    getContests(page){
+        page = page || 1;
+        contestService.getAll(page).then(response => {
+            this.setState({contests: response.data.contests.docs})
         });
     }
 
     render() {
-        const {contests, user} = this.state;
+        const {contests, user, page, totalPages} = this.state;
         return (
             <div className="col-md-12">
                 <h1>Hi!</h1>
@@ -35,6 +43,22 @@ class HomePage extends Component {
                 {contests.map((contest, id) => {
                     return <Contest contest={contest} user={user} key={id} id={id}/>
                 })}
+                </div>
+                <div className="container">
+                    <ul className="pagination">
+                    {page !== 1 &&
+                    <li className="page-item">
+                        <button className="page-link" onClick={()=>{this.getContests(page - 1)}}>
+                        &#x3C;
+                        </button>
+                    </li>}
+                    {page !== totalPages &&
+                    <li className="page-item">
+                        <button className="page-link" onClick={()=>{this.getContests(page + 1)}}>
+                        &#x3E;
+                        </button>
+                    </li>}
+                    </ul>
                 </div>
             </div>
         );
