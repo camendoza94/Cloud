@@ -132,13 +132,14 @@ exports.addParticipantRecord = (req, res, next) => {
 exports.getParticipantRecords = (req, res, next) => {
     const contestId = req.params.id;
     
-    ParticipantRecords.findAll({where: {contestId}})
+    ParticipantRecords.findAll({where: {contestId}, order: [['createdAt', 'DESC']]})
     .then((participantRecords) => {
         res.json({participantRecords: participantRecords});
     }).catch((err) => {
         res.send(err.stack);
     });
 };
+
 
 exports.setParticipantRecordWinner = (req, res, next) => {
     //Use Contest.setWinner

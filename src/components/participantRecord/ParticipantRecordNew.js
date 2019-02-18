@@ -14,7 +14,7 @@ class ParticipantRecordNew extends Component {
         participantRecordService.createParticipantRecord(contestId, formData)
                 .then((response) => { 
                     console.log(response);
-                    alert('Your voice was submitted! Soon it will be available');
+                    alert('Your voice was submitted! Soon it will be processed and will be available. After publishing it, you will get an email');
                     this.props.history.goBack();
                 }).catch((err) => {
                     console.log(err);
