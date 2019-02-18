@@ -1,8 +1,11 @@
 const {setPassword, generateJWT, toAuthJSON} = require('../config/passport');
+const {IMAGE_PATH} = require('../constants');
 const db = require('../config/db');
 const User = db.users;
 const Contest = db.contests;
 const passport = require('passport');
+const uuid = require('uuid/v4');
+const fs = require('fs');
 
 
 exports.registerUser = (req, res, next) => {
@@ -103,8 +106,33 @@ exports.getContests = (req, res, next) => {
 
 exports.addContests = (req, res, next) => {
     const userId = req.params.id;
-    const {body: {contest}} = req;
-    contest.userId = userId;
+    const {body} = req;
+    body.userId = userId;
+    let uploadFile = req.files.file;
+
+    const extension = uploadFile.name.split('.').pop();
+    const uniqueFileName = `${uuid.v4()}.${extension}`;
+    const savePath = `${IMAGE_PATH}${uniqueFileName}`;
+
+    uploadFile.mv(savePath,
+        function (err) {
+            if (err) {
+                return res.status(500).send(err)
+            }
+            const stream = fs.createWriteStream(savePath, { encoding: 'utf8' });
+            stream.once('open', () => {
+                stream.write(uploadFile.data, writeErr => {
+                    if (writeErr) {
+                        return res.status(500).send(`Failed to write content ${savePath}.`);
+                    }
+                    stream.close();
+                    console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
+                })
+            });
+            console.log("Moved");
+        },
+    );
+
 
     const {payload: {id}} = req;
     if(parseInt(userId) !== parseInt(id)) {
@@ -115,7 +143,7 @@ exports.addContests = (req, res, next) => {
         });
     }
 
-    if (!contest.name) {
+    if (!body.name) {
         return res.status(422).json({
             errors: {
                 name: 'is required',
@@ -123,7 +151,7 @@ exports.addContests = (req, res, next) => {
         });
     }
 
-    if (!contest.url) {
+    if (!body.url) {
         return res.status(422).json({
             errors: {
                 url: 'is required',
@@ -131,15 +159,15 @@ exports.addContests = (req, res, next) => {
         });
     }
 
-    if (!contest.image) {
+    if (!req.files.file) {
         return res.status(422).json({
             errors: {
-                image: 'is required',
+                file: 'is required',
             },
         });
     }
 
-    if (!contest.startDate) {
+    if (!body.startDate) {
         return res.status(422).json({
             errors: {
                 startDate: 'is required',
@@ -147,9 +175,9 @@ exports.addContests = (req, res, next) => {
         });
     }
 
-    const startDate = new Date(contest.startDate);
-   
-    if (!contest.endDate) {
+    const startDate = new Date(body.startDate);
+
+    if (!body.endDate) {
         return res.status(422).json({
             errors: {
                 endDate: 'is required',
@@ -157,9 +185,8 @@ exports.addContests = (req, res, next) => {
         });
     }
 
-    const endDate = new Date(contest.endDate);
-   
-    //TODO: Validate the dates
+    const endDate = new Date(body.endDate);
+
     if (endDate < startDate) {
         return res.status(422).json({
             errors: {
@@ -168,7 +195,7 @@ exports.addContests = (req, res, next) => {
         });
     }
 
-    if (!contest.payment) {
+    if (!body.payment) {
         return res.status(422).json({
             errors: {
                 payment: 'is required',
@@ -176,15 +203,15 @@ exports.addContests = (req, res, next) => {
         });
     }
 
-    if (!contest.text) {
+    if (!body.text) {
         return res.status(422).json({
             errors: {
                 text: 'is required',
             },
         });
     }
-
-    Contest.create(contest).then((contest) => {
+    body.image = uniqueFileName;
+    Contest.create(body).then((contest) => {
         res.json({contest: contest});
     }).catch((err) => {
         return res.send(err.stack);

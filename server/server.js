@@ -16,6 +16,8 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(fileUpload());
 app.use('/audio', express.static( path.join(__dirname, '/audio')));
+app.use('/images', express.static(path.join(__dirname, '/images')));
+
 
 const db = require('./config/db.js');
 const ParticipantRecord = require('./controller/participantRecord');

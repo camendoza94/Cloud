@@ -33,44 +33,42 @@ function getAll() {
 }
 
 function addContest(name, image, url, startDate, endDate, payment, text, recommendations) {
+    const data = new FormData();
+    data.append('file', image);
+    data.append('filename', image.name);
+    data.append('name', name);
+    data.append('url', url);
+    data.append('startDate', startDate);
+    data.append('endDate', endDate);
+    data.append('payment', payment);
+    data.append('text', text);
+    data.append('recommendations', recommendations);
     const id = JSON.parse(localStorage.getItem('user')).id;
     return axios({
         method: 'post',
         url: process.env.REACT_APP_ROOT_URL + "/users/" + id + "/contests",
-        data: {
-            contest: {
-                name,
-                image,
-                url,
-                startDate,
-                endDate,
-                payment,
-                text,
-                recommendations
-            }
-        },
+        data: data,
         headers: authHeader()
     }).then(contests => contests)
         .catch(err => err);
 }
 
 function updateContest(name, image, url, startDate, endDate, payment, text, recommendations) {
+    const data = new FormData();
+    data.append('file', image);
+    data.append('filename', image.name);
+    data.append('name', name);
+    data.append('url', url);
+    data.append('startDate', startDate);
+    data.append('endDate', endDate);
+    data.append('payment', payment);
+    data.append('text', text);
+    data.append('recommendations', recommendations);
     const id = JSON.parse(localStorage.getItem('user')).id;
     return axios({
         method: 'put',
         url: process.env.REACT_APP_ROOT_URL + "/contests/" + id,
-        data: {
-            contest: {
-                name,
-                image,
-                url,
-                startDate,
-                endDate,
-                payment,
-                text,
-                recommendations
-            }
-        },
+        data: data,
         headers: authHeader()
     }).then(contests => contests)
         .catch(err => err);
