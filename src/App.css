@@ -30,3 +30,18 @@
     transform: rotate(360deg);
   }
 }
+
+#banner {
+  background: #097492;
+  margin-top: -2em;
+  padding: 2em;
+  border-radius: 3em;
+}
+
+#login {
+  background: #afbcd6;
+  margin-top: -2em;
+  padding: 1em;
+  z-index: 2;
+  border-radius: 3em;
+}

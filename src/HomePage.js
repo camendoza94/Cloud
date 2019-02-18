@@ -25,9 +25,9 @@ class HomePage extends Component {
     render() {
         const {contests, user} = this.state;
         return (
-            <div className="col-md-12 offset-md-3">
+            <div className="col-md-12">
                 <h1>Hi!</h1>
-                <div className="row col-md-3 offset-md-9">
+                <div className="row col-md-3 offset-md-10">
                     <Link to='/add' className="btn btn-success">Add</Link>
                     <Link to="/login">Logout</Link>
                 </div>

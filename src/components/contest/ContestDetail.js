@@ -54,7 +54,7 @@ class ContestDetail extends Component {
         const contest = (this.props.location.state && this.props.location.state.contest) || this.state.contest;
         const {participantRecords, loading} = this.state;
         return (
-            <div className="card col-md-12 offset-md-3">
+            <div className="card col-md-12">
                 {contest ? <div>
                     <img className="card-img-top" src={contest.image} alt={contest.name}/>
                     <div className="card-body">
@@ -97,6 +97,8 @@ class ContestDetail extends Component {
                     </Link>
                     <button className="btn btn-danger" onClick={this.deleteContest}>Delete contest</button>
                 </div>}
+                {user && 
+                    <Link to="/contests">Volver</Link>}
             </div>
         );
     }
