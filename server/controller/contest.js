@@ -1,4 +1,4 @@
-const {IN_PROGRESS, UPLOAD_PATH, CONVERSION_FORMAT, CONVERTED} = require('../constants');
+const {IN_PROGRESS, UPLOAD_PATH, CONVERSION_FORMAT, CONVERTED, IMAGE_PATH} = require('../constants');
 const db = require('../config/db');
 const Contest = db.contests;
 const ParticipantRecords = db.participantRecords;
@@ -49,12 +49,36 @@ exports.delete = (req, res, next) => {
 
 exports.update = (req, res, next) => {
     const {
-        body: {contest},
+        body,
         params: {id}
     } = req;
     const userId = req.payload.id;
-    
-    Contest.update(contest,
+    let uploadFile = req.files.file;
+
+    const extension = uploadFile.name.split('.').pop();
+    const uniqueFileName = `${uuid.v4()}.${extension}`;
+    const savePath = `${IMAGE_PATH}${uniqueFileName}`;
+
+    uploadFile.mv(savePath,
+        function (err) {
+            if (err) {
+                return res.status(500).send(err)
+            }
+            const stream = fs.createWriteStream(savePath, { encoding: 'utf8' });
+            stream.once('open', () => {
+                stream.write(uploadFile.data, writeErr => {
+                    if (writeErr) {
+                        return res.status(500).send(`Failed to write content ${savePath}.`);
+                    }
+                    stream.close();
+                    console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
+                })
+            });
+            console.log("Moved");
+        },
+    );
+    body.image = uniqueFileName;
+    Contest.update(body,
         {
             where: {
                 id: id,
