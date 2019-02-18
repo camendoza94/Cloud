@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import {CONVERTED} from '../../utils/constants';
-import ReactPlayer from 'react-player';
 
 class ParticipantRecord extends Component {
     render() {
         const {user, participantRecord} = this.props;
-        return (<>{((!user && participantRecord.state == CONVERTED) || user) && <div className="col-sm-12">
+        return (<>{((!user && participantRecord.state === CONVERTED) || user) && <div className="col-sm-12">
                     <div className="card">
                         <div className="card-body text-center">
                             <h5 className="card-title">{participantRecord.email}</h5>
