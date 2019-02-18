@@ -79,7 +79,20 @@ class ContestDetail extends Component {
                     record</Link>}
                 {user && contest &&
                 <div className="btn btn-group">
-                    <Link className="btn btn-primary" to={`/contests/${contest.id}/edit`}>
+                    <Link className="btn btn-primary"
+                          to={{
+                              pathname: `/contests/${contest.id}/edit`, state: {
+                                  edit: true,
+                                  name: contest.name,
+                                  image: contest.image,
+                                  url: contest.url,
+                                  startDate: contest.startDate,
+                                  endDate: contest.endDate,
+                                  payment: contest.payment,
+                                  text: contest.text,
+                                  recommendations: contest.recommendations
+                              }
+                          }}>
                         Edit contest
                     </Link>
                     <button className="btn btn-danger" onClick={this.deleteContest}>Delete contest</button>

@@ -5,7 +5,8 @@ export const contestService = {
     getAll,
     deleteContest,
     addContest,
-    getByURL
+    getByURL,
+    updateContest
 };
 
 function getByURL(url) {
@@ -36,6 +37,28 @@ function addContest(name, image, url, startDate, endDate, payment, text, recomme
     return axios({
         method: 'post',
         url: process.env.REACT_APP_ROOT_URL + "/users/" + id + "/contests",
+        data: {
+            contest: {
+                name,
+                image,
+                url,
+                startDate,
+                endDate,
+                payment,
+                text,
+                recommendations
+            }
+        },
+        headers: authHeader()
+    }).then(contests => contests)
+        .catch(err => err);
+}
+
+function updateContest(name, image, url, startDate, endDate, payment, text, recommendations) {
+    const id = JSON.parse(localStorage.getItem('user')).id;
+    return axios({
+        method: 'put',
+        url: process.env.REACT_APP_ROOT_URL + "/contests/" + id,
         data: {
             contest: {
                 name,
