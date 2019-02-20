@@ -1,5 +1,11 @@
 module.exports = (app) => {
     app.get('/', (req, res) => {
-        res.json({ info: 'Contests API' })
+      let routes = [];
+      routes = app._router.stack.map(route => {
+        return route.route || '';
+      })
+      routes = routes.filter(Boolean);
+      res.json({ info: 'Contests API',
+                  api: routes });
       })
 }
