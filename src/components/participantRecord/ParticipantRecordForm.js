@@ -101,7 +101,7 @@ class ParticipantRecordForm extends Component {
                     }
                 </div>
                 <div className="form-group">
-                    <button className="btn btn-primary" disabled={loading}>Sumbit voice</button>
+                    <button className="btn btn-primary" disabled={loading}>Submit voice</button>
                     {loading &&
                     <img
                         alt=""
