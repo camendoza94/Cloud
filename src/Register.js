@@ -16,6 +16,8 @@ class Register extends Component {
             passwordConfirm: '',
             submitted: false,
             loading: false,
+            passwordsMatch: false,
+            passwordRequiredLength: false,
             error: ''
         };
 
@@ -30,12 +32,13 @@ class Register extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-
         this.setState({submitted: true});
         const {email, firstName, lastName, passwordConfirm, password} = this.state;
-
+        const passwordRequiredLength = password > 5;
+        const passwordsMatch = passwordConfirm === password;
+        this.setState({passwordRequiredLength, passwordsMatch});
         // stop here if form is invalid
-        if (!(email && password && firstName && lastName && passwordConfirm)) {
+        if (!(email && password && firstName && lastName && passwordConfirm && passwordsMatch && passwordRequiredLength)) {
             return;
         }
 
@@ -46,15 +49,14 @@ class Register extends Component {
                 const {from} = this.props.location.state || {from: {pathname: "/"}};
                 this.props.history.push(from);
             })
-            .catch(err => {
-                    this.setState({error: err.toString(), loading: false});
-                }
+            .catch(() =>
+                this.setState({error: "User with given email already exists.", loading: false})
             )
 
     }
 
     render() {
-        const {firstName, lastName, email, password, passwordConfirm, submitted, loading, error} = this.state;
+        const {firstName, lastName, email, password, passwordConfirm, submitted, loading, error, passwordsMatch, passwordRequiredLength} = this.state;
         return (
             <div className="col-md-6 offset-md-3">
                 <h2>Register</h2>
@@ -90,6 +92,9 @@ class Register extends Component {
                         {submitted && !password &&
                         <div className="help-block">Password is required</div>
                         }
+                        {submitted && password && !passwordRequiredLength &&
+                        <div className="help-block">Password must be 6 or more characters long</div>
+                        }
                     </div>
                     <div className={'form-group' + (submitted && !passwordConfirm ? ' has-error' : '')}>
                         <label htmlFor="passwordConfirm">Confirm password</label>
@@ -98,12 +103,15 @@ class Register extends Component {
                         {submitted && !passwordConfirm &&
                         <div className="help-block">Password confirmation is required</div>
                         }
+                        {submitted && passwordConfirm && password && !passwordsMatch &&
+                        <div className="help-block">Password do not match</div>
+                        }
                     </div>
                     <div className="form-group">
                         <button className="btn btn-primary" disabled={loading}>Register</button>
                         {loading &&
                         <img alt=""
-                            src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+                             src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
                         }
                     </div>
                     <p>Already have an account? Click <Link to='/login'>here</Link></p>

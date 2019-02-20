@@ -8,7 +8,8 @@ module.exports = (sequelize, Sequelize) => {
         },
         email: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         hash: {
             type: Sequelize.TEXT,

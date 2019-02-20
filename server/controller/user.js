@@ -37,8 +37,8 @@ exports.registerUser = (req, res, next) => {
         }).then( (newUser) => {
             user.token = generateJWT(newUser);
             res.json({user: toAuthJSON(newUser)});
-        }).catch((err) => {
-            return res.send(err.stack);
+        }).catch(() => {
+            return res.status(400).send({ error: "User already exists." });
         });
 };
 
