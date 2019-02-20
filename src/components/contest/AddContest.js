@@ -32,12 +32,11 @@ class AddContest extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-
         this.setState({submitted: true});
         const {name, image, url, startDate, endDate, payment, text, recommendations, edit} = this.state;
 
         // stop here if form is invalid
-        if (!(name && image && url && startDate && endDate && payment && text && recommendations && (new Date(startDate) >= new Date(endDate)))) {
+        if (!(name && image && url && startDate && endDate && payment && text && recommendations && (new Date(startDate) <= new Date(endDate)))) {
             return;
         }
 
@@ -74,8 +73,8 @@ class AddContest extends Component {
         reader.onload = (event) => {
             this.setState({imageSrc: event.target.result})
         };
-
-        reader.readAsDataURL(file);
+        if(file)
+            reader.readAsDataURL(file);
     }
 
     render() {
