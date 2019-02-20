@@ -4,7 +4,7 @@ const Cors = require('cors');
 const bodyParser = require('body-parser');
 const express = require('express');
 const fileUpload = require('express-fileupload');
-const cron = require('node-cron');
+const CronJob = require('cron').CronJob;
 const path = require('path');
 
 let app = express();
@@ -37,11 +37,11 @@ require('./route/participantRecord.js')(app);
 ParticipantRecord.convertFiles();
 
 // Task to convert files
-cron.schedule('22 18 * * *', () => {
+new CronJob('12 21 * * *', () => {
   console.log("---------------------");
   console.log("Running Cron Job");
   ParticipantRecord.convertFiles();
-});
+}, null, true);
 
 let listener = app.listen(process.env.PORT || 8081, function () {
     console.log('App running on http://localhost:' + listener.address().port);
