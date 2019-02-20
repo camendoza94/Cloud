@@ -17,6 +17,9 @@
 # Audio
 /server/audio
 
+# Images
+/server/images
+
 # misc
 .DS_Store
 .env
