@@ -22,6 +22,7 @@ class AddContest extends Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChangeFile = this.handleChangeFile.bind(this);
     }
 
     handleChange(e) {
@@ -65,8 +66,20 @@ class AddContest extends Component {
 
     }
 
+    handleChangeFile(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        const {name, value} = e.target;
+        this.setState({[name]: value});
+        reader.onload = (event) => {
+            this.setState({imageSrc: event.target.result})
+        };
+
+        reader.readAsDataURL(file);
+    }
+
     render() {
-        const {name, image, url, startDate, endDate, payment, text, recommendations, submitted, loading, error} = this.state;
+        const {name, image, url, startDate, endDate, payment, text, recommendations, submitted, loading, error, imageSrc} = this.state;
         return (
             <div className="col-md-8 offset-md-2">
                 <h2>Add new contest</h2>
@@ -76,17 +89,18 @@ class AddContest extends Component {
                         <input type="text" className="form-control" name="name" value={name}
                                onChange={this.handleChange}/>
                         {submitted && !name &&
-                        <div className="help-block alert">Name is required</div>
+                        <div className="help-block">Name is required</div>
                         }
                     </div>
-                    {this.props.location.state && this.props.location.state.image &&
-                    <img src={(this.imageFile && URL.createObjectURL(this.imageFile.files[0])) || `${process.env.REACT_APP_ROOT_URL}/images/${this.props.location.state.image}`}
-                         alt={`Event: ${name}`} className="img-thumbnail"/>}
+                    {((this.props.location.state && this.props.location.state.image) || imageSrc) &&
+                    <img
+                        src={(this.imageFile && imageSrc) || `${process.env.REACT_APP_ROOT_URL}/images/${this.props.location.state.image}`}
+                        alt={`Event: ${name}`} className="img-thumbnail"/>}
                     <div className={'form-group' + (submitted && !image ? ' has-error' : '')}>
                         <label htmlFor="image">Image</label>
                         <input type="file" className="form-control" name="image" value={image}
                                ref={ref => this.imageFile = ref} accept="image/*"
-                               onChange={this.handleChange}/>
+                               onChange={this.handleChangeFile}/>
                         {submitted && !image &&
                         <div className="help-block">Image is required</div>
                         }
