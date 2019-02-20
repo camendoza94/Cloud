@@ -79,7 +79,7 @@ class ContestDetail extends Component {
                                 <li className="list-group-item"><b>Texto:</b> {contest.text}</li>
                                 <li className="list-group-item"><b>Recomendaciones: </b> {contest.recommendations}</li>
                                 <li className="list-group-item"><b>Pago: </b>{contest.payment}</li>
-                                <li className="list-group-item"><b>URL de acceso:</b> {window.location.protocol + "//" + window.location.host + "/contests/" + contest.url}</li>
+                                <li className="list-group-item"><b>URL de acceso:</b> <Link to={'/contests/' + contest.url}>{contest.url}</Link></li>
                             </ul>
                         </div> : ''}
                         {loading ?
