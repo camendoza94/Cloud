@@ -37,7 +37,7 @@ class AddContest extends Component {
         const {name, image, url, startDate, endDate, payment, text, recommendations, edit} = this.state;
 
         // stop here if form is invalid
-        if (!(name && image && url && startDate && endDate && payment && text && recommendations)) {
+        if (!(name && image && url && startDate && endDate && payment && text && recommendations && (new Date(startDate) >= new Date(endDate)))) {
             return;
         }
 
@@ -84,73 +84,95 @@ class AddContest extends Component {
             <div className="col-md-8 offset-md-2">
                 <h2>Add new contest</h2>
                 <form name="form" onSubmit={this.handleSubmit}>
-                    <div className={'form-group' + (submitted && !name ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="name">Name</label>
-                        <input type="text" className="form-control" name="name" value={name}
+                        <input type="text"
+                               className={'form-control' + (submitted && !name ? ' is-invalid' : (submitted && name) ? ' is-valid' : '')}
+                               name="name" value={name}
                                onChange={this.handleChange}/>
                         {submitted && !name &&
-                        <div className="help-block">Name is required</div>
+                        <div className="text-muted">Name is required</div>
                         }
                     </div>
                     {((this.props.location.state && this.props.location.state.image) || imageSrc) &&
                     <img
                         src={(this.imageFile && imageSrc) || `${process.env.REACT_APP_ROOT_URL}/images/${this.props.location.state.image}`}
                         alt={`Event: ${name}`} className="img-thumbnail"/>}
-                    <div className={'form-group' + (submitted && !image ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="image">Image</label>
-                        <input type="file" className="form-control" name="image" value={image}
+                        <input type="file"
+                               className={'form-control' + (submitted && !image ? ' is-invalid' : (submitted && image) ? ' is-valid' : '')}
+                               name="image" value={image}
                                ref={ref => this.imageFile = ref} accept="image/*"
                                onChange={this.handleChangeFile}/>
                         {submitted && !image &&
-                        <div className="help-block">Image is required</div>
+                        <div className="text-muted">Image is required</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !url ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="url">URL</label>
-                        <input type="text" className="form-control" name="url" value={url}
+                        <input type="text"
+                               className={'form-control' + (submitted && !url ? ' is-invalid' : (submitted && url) ? ' is-valid' : '')}
+                               name="url" value={url}
                                onChange={this.handleChange}/>
                         {submitted && !url &&
-                        <div className="help-block">URL is required</div>
+                        <div className="text-muted">URL is required</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !startDate ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="startDate">Start date</label>
-                        <input type="date" className="form-control" name="startDate" value={startDate}
+                        <input type="date"
+                               className={'form-control' + (submitted && !startDate ? ' is-invalid' : (submitted && startDate) ? ' is-valid' : '')}
+                               name="startDate" value={startDate}
                                onChange={this.handleChange}/>
                         {submitted && !startDate &&
-                        <div className="help-block">Start date is required</div>
+                        <div className="text-muted">Start date is required</div>
+                        }
+                        {submitted && (new Date(endDate) < new Date(startDate)) &&
+                        <div className="text-muted">End date can't be before start date</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !endDate ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="endDate">End date</label>
-                        <input type="date" className="form-control" name="endDate" value={endDate}
+                        <input type="date"
+                               className={'form-control' + (submitted && !endDate ? ' is-invalid' : (submitted && endDate) ? ' is-valid' : '')}
+                               name="endDate" value={endDate}
                                onChange={this.handleChange}/>
                         {submitted && !endDate &&
-                        <div className="help-block">End date is required</div>
+                        <div className="text-muted">End date is required</div>
+                        }
+                        {submitted && (new Date(endDate) < new Date(startDate)) &&
+                        <div className="text-muted">End date can't be before start date</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !payment ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="payment">Payment</label>
-                        <input type="number" className="form-control" name="payment" value={payment}
+                        <input type="number"
+                               className={'form-control' + (submitted && !payment ? ' is-invalid' : (submitted && payment) ? ' is-valid' : '')}
+                               name="payment" value={payment}
                                onChange={this.handleChange}/>
                         {submitted && !payment &&
-                        <div className="help-block">Payment is required</div>
+                        <div className="text-muted">Payment is required</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !text ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="text">Text</label>
-                        <textarea className="form-control" name="text" rows="3" value={text}
-                                  onChange={this.handleChange}/>
+                        <textarea
+                            className={'form-control' + (submitted && !text ? ' is-invalid' : (submitted && text) ? ' is-valid' : '')}
+                            name="text" rows="3" value={text}
+                            onChange={this.handleChange}/>
                         {submitted && !text &&
-                        <div className="help-block">Text is required</div>
+                        <div className="text-muted">Text is required</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !recommendations ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="recommendations">Recommendations</label>
-                        <textarea className="form-control" name="recommendations" rows="3" value={recommendations}
-                                  onChange={this.handleChange}/>
+                        <textarea
+                            className={'form-control' + (submitted && !recommendations ? ' is-invalid' : (submitted && recommendations) ? ' is-valid' : '')}
+                            name="recommendations" rows="3" value={recommendations}
+                            onChange={this.handleChange}/>
                         {submitted && !recommendations &&
-                        <div className="help-block">Recommendations required</div>
+                        <div className="text-muted">Recommendations required</div>
                         }
                     </div>
                     <div className="form-group">

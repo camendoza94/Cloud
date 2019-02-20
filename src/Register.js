@@ -16,13 +16,13 @@ class Register extends Component {
             passwordConfirm: '',
             submitted: false,
             loading: false,
-            passwordsMatch: false,
             passwordRequiredLength: false,
             error: ''
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChangePassword = this.handleChangePassword.bind(this);
     }
 
     handleChange(e) {
@@ -30,15 +30,20 @@ class Register extends Component {
         this.setState({[name]: value});
     }
 
+    handleChangePassword(e) {
+        const {name, value} = e.target;
+        this.setState({[name]: value, passwordRequiredLength: e.target.value.length > 5});
+    }
+
     handleSubmit(e) {
         e.preventDefault();
         this.setState({submitted: true});
         const {email, firstName, lastName, passwordConfirm, password} = this.state;
-        const passwordRequiredLength = password > 5;
-        const passwordsMatch = passwordConfirm === password;
-        this.setState({passwordRequiredLength, passwordsMatch});
+        console.log(password.length);
+        const passwordRequiredLength = password.length > 5;
+        this.setState({passwordRequiredLength});
         // stop here if form is invalid
-        if (!(email && password && firstName && lastName && passwordConfirm && passwordsMatch && passwordRequiredLength)) {
+        if (!(email && password && firstName && lastName && passwordConfirm && passwordRequiredLength && (password === passwordConfirm))) {
             return;
         }
 
@@ -56,55 +61,65 @@ class Register extends Component {
     }
 
     render() {
-        const {firstName, lastName, email, password, passwordConfirm, submitted, loading, error, passwordsMatch, passwordRequiredLength} = this.state;
+        const {firstName, lastName, email, password, passwordConfirm, submitted, loading, error, passwordRequiredLength} = this.state;
         return (
             <div className="col-md-6 offset-md-3">
                 <h2>Register</h2>
                 <form name="form" onSubmit={this.handleSubmit}>
-                    <div className={'form-group' + (submitted && !firstName ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="firstName">First name</label>
-                        <input type="text" className="form-control" name="firstName" value={firstName}
+                        <input type="text"
+                               className={'form-control' + (submitted && !firstName ? ' is-invalid' : (submitted && firstName) ? ' is-valid' : '')}
+                               name="firstName" value={firstName}
                                onChange={this.handleChange}/>
                         {submitted && !firstName &&
-                        <div className="help-block alert">First name is required</div>
+                        <div className="text-muted">First name is required</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !lastName ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="lastName">Last name</label>
-                        <input type="text" className="form-control" name="lastName" value={lastName}
+                        <input type="text"
+                               className={'form-control' + (submitted && !lastName ? ' is-invalid' : (submitted && lastName) ? ' is-valid' : '')}
+                               name="lastName" value={lastName}
                                onChange={this.handleChange}/>
                         {submitted && !lastName &&
-                        <div className="help-block">Last name is required</div>
+                        <div className="text-muted">Last name is required</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !email ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="email">Email</label>
-                        <input type="email" className="form-control" name="email" value={email}
+                        <input type="email"
+                               className={'form-control' + (submitted && !email ? ' is-invalid' : (submitted && email) ? ' is-valid' : '')}
+                               name="email" value={email}
                                onChange={this.handleChange}/>
                         {submitted && !email &&
-                        <div className="help-block">Email is required</div>
+                        <div className="text-muted">Email is required</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !password ? ' has-error' : '')}>
+                    <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input type="password" className="form-control" name="password" value={password}
-                               onChange={this.handleChange}/>
+                        <input type="password"
+                               className={'form-control' + (submitted && (!password || !passwordRequiredLength) ? ' is-invalid' : (submitted && password && passwordRequiredLength) ? ' is-valid' : '')}
+                               name="password" value={password}
+                               onChange={this.handleChangePassword}/>
                         {submitted && !password &&
-                        <div className="help-block">Password is required</div>
+                        <div className="text-muted">Password is required</div>
                         }
                         {submitted && password && !passwordRequiredLength &&
-                        <div className="help-block">Password must be 6 or more characters long</div>
+                        <div className="text-muted">Password must be 6 or more characters long</div>
                         }
                     </div>
-                    <div className={'form-group' + (submitted && !passwordConfirm ? ' has-error' : '')}>
+                    <div className={'form-group'}>
                         <label htmlFor="passwordConfirm">Confirm password</label>
-                        <input type="password" className="form-control" name="passwordConfirm" value={passwordConfirm}
-                               onChange={this.handleChange}/>
+                        <input type="password"
+                               className={'form-control' + (submitted && (!passwordConfirm || !passwordRequiredLength || !(password === passwordConfirm)) ? ' is-invalid' : (submitted && passwordConfirm && (password === passwordConfirm) && passwordRequiredLength) ? ' is-valid' : '')}
+                               name="passwordConfirm" value={passwordConfirm}
+                               onChange={this.handleChangePassword}/>
                         {submitted && !passwordConfirm &&
-                        <div className="help-block">Password confirmation is required</div>
+                        <div className="text-muted">Password confirmation is required</div>
                         }
-                        {submitted && passwordConfirm && password && !passwordsMatch &&
-                        <div className="help-block">Password do not match</div>
+                        {submitted && passwordConfirm && password && !(password === passwordConfirm) &&
+                        <div className="text-muted">Password do not match</div>
                         }
                     </div>
                     <div className="form-group">

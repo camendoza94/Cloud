@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 class ParticipantRecordForm extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             firstName: '',
@@ -47,62 +47,72 @@ class ParticipantRecordForm extends Component {
 
 
     render() {
-        const { firstName, lastName, email, audioFile, submitted, loading, error, observations } = this.state;
+        const {firstName, lastName, email, audioFile, submitted, loading, error, observations} = this.state;
         return <div className="col-md-6">
-                    <form name="form" onSubmit={this.handleSubmit}>
-                        <div className={'form-group' + (submitted && !firstName ? ' has-error' : '')}>
-                            <label htmlFor="firstName">First name</label>
-                            <input type="text" className="form-control" name="firstName" value={firstName}
-                                onChange={this.handleChange}/>
-                            {submitted && !firstName &&
-                            <div className="help-block alert">First name is required</div>
-                            }
-                        </div>
-                        <div className={'form-group' + (submitted && !lastName ? ' has-error' : '')}>
-                            <label htmlFor="lastName">Last name</label>
-                            <input type="text" className="form-control" name="lastName" value={lastName}
-                                onChange={this.handleChange}/>
-                            {submitted && !lastName &&
-                            <div className="help-block">Last name is required</div>
-                            }
-                        </div>
-                        <div className={'form-group' + (submitted && !email ? ' has-error' : '')}>
-                            <label htmlFor="email">Email</label>
-                            <input type="email" className="form-control" name="email" value={email}
-                                onChange={this.handleChange}/>
-                            {submitted && !email &&
-                            <div className="help-block">Email is required</div>
-                            }
-                        </div>
-                        <div className={'form-group' + (submitted && !audioFile ? ' has-error' : '')}>
-                            <label htmlFor="audioFile">Audio file</label>
-                            <input type="file" className="form-control" name="audioFile" ref={ ref => this.audioFile = ref}
-                                onChange={this.handleChange} accept="audio/*"/>
-                            {submitted && !audioFile &&
-                            <div className="help-block">Audio file is required</div>
-                            }
-                        </div>
-                        <div className={'form-group' + (submitted && !observations ? ' has-error' : '')}>
-                            <label htmlFor="observations">Observations</label>
-                            <textarea className="form-control" name="observations" value={observations}
-                                onChange={this.handleChange}></textarea>
-                            {submitted && !observations &&
-                            <div className="help-block">Observations are required</div>
-                            }
-                        </div>
-                        <div className="form-group">
-                            <button className="btn btn-primary" disabled={loading}>Sumbit voice</button>
-                            {loading &&
-                            <img
-                                alt=""
-                                src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
-                            }
-                        </div>
-                        {error &&
-                        <div className={'alert alert-danger'}>{error}</div>
-                        }
-                    </form>
-                </div>;
+            <form name="form" onSubmit={this.handleSubmit}>
+                <div className="form-group">
+                    <label htmlFor="firstName">First name</label>
+                    <input type="text"
+                           className={'form-control' + (submitted && !firstName ? ' is-invalid' : (submitted && firstName) ? ' is-valid' : '')}
+                           name="firstName" value={firstName}
+                           onChange={this.handleChange}/>
+                    {submitted && !firstName &&
+                    <div className="text-muted">First name is required</div>
+                    }
+                </div>
+                <div className="form-group">
+                    <label htmlFor="lastName">Last name</label>
+                    <input type="text"
+                           className={'form-control' + (submitted && !lastName ? ' is-invalid' : (submitted && lastName) ? ' is-valid' : '')}
+                           name="lastName" value={lastName}
+                           onChange={this.handleChange}/>
+                    {submitted && !lastName &&
+                    <div className="text-muted">Last name is required</div>
+                    }
+                </div>
+                <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input type="email"
+                           className={'form-control' + (submitted && !email ? ' is-invalid' : (submitted && email) ? ' is-valid' : '')}
+                           name="email" value={email}
+                           onChange={this.handleChange}/>
+                    {submitted && !email &&
+                    <div className="text-muted">Email is required</div>
+                    }
+                </div>
+                <div className="form-group">
+                    <label htmlFor="audioFile">Audio file</label>
+                    <input type="file"
+                           className={'form-control' + (submitted && !audioFile ? ' is-invalid' : (submitted && audioFile) ? ' is-valid' : '')}
+                           name="audioFile" ref={ref => this.audioFile = ref}
+                           onChange={this.handleChange} accept="audio/*"/>
+                    {submitted && !audioFile &&
+                    <div className="text-muted">Audio file is required</div>
+                    }
+                </div>
+                <div className="form-group">
+                    <label htmlFor="observations">Observations</label>
+                    <textarea
+                        className={'form-control' + (submitted && !observations ? ' is-invalid' : (submitted && observations) ? ' is-valid' : '')}
+                        name="observations" value={observations}
+                        onChange={this.handleChange}/>
+                    {submitted && !observations &&
+                    <div className="text-muted">Observations are required</div>
+                    }
+                </div>
+                <div className="form-group">
+                    <button className="btn btn-primary" disabled={loading}>Sumbit voice</button>
+                    {loading &&
+                    <img
+                        alt=""
+                        src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+                    }
+                </div>
+                {error &&
+                <div className={'alert alert-danger'}>{error}</div>
+                }
+            </form>
+        </div>;
     }
 }
 
