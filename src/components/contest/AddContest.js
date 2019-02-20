@@ -36,7 +36,7 @@ class AddContest extends Component {
         const {name, image, url, startDate, endDate, payment, text, recommendations, edit} = this.state;
 
         // stop here if form is invalid
-        if (!(name && image && url && startDate && endDate && payment && text && recommendations && (new Date(startDate) <= new Date(endDate)))) {
+        if (!(name && (image || (this.props.location.state && this.props.location.state.image)) && url && startDate && endDate && payment && text && recommendations && (new Date(startDate) <= new Date(endDate)))) {
             return;
         }
 
@@ -73,7 +73,7 @@ class AddContest extends Component {
         reader.onload = (event) => {
             this.setState({imageSrc: event.target.result})
         };
-        if(file)
+        if (file)
             reader.readAsDataURL(file);
     }
 
@@ -100,11 +100,11 @@ class AddContest extends Component {
                     <div className="form-group">
                         <label htmlFor="image">Image</label>
                         <input type="file"
-                               className={'form-control' + (submitted && !image ? ' is-invalid' : (submitted && image) ? ' is-valid' : '')}
+                               className={'form-control' + (submitted && !image && !(this.props.location.state && this.props.location.state.image) ? ' is-invalid' : (submitted && (image || (this.props.location.state && this.props.location.state.image))) ? ' is-valid' : '')}
                                name="image" value={image}
                                ref={ref => this.imageFile = ref} accept="image/*"
                                onChange={this.handleChangeFile}/>
-                        {submitted && !image &&
+                        {submitted && (!image && !(this.props.location.state && this.props.location.state.image)) &&
                         <div className="text-muted">Image is required</div>
                         }
                     </div>

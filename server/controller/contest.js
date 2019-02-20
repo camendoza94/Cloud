@@ -54,30 +54,31 @@ exports.update = (req, res, next) => {
     } = req;
     const userId = req.payload.id;
     let uploadFile = req.files.file;
+    if (uploadFile) {
+        const extension = uploadFile.name.split('.').pop();
+        const uniqueFileName = `${uuid.v4()}.${extension}`;
+        const savePath = `${IMAGE_PATH}${uniqueFileName}`;
 
-    const extension = uploadFile.name.split('.').pop();
-    const uniqueFileName = `${uuid.v4()}.${extension}`;
-    const savePath = `${IMAGE_PATH}${uniqueFileName}`;
-
-    uploadFile.mv(savePath,
-        function (err) {
-            if (err) {
-                return res.status(500).send(err)
-            }
-            const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
-            stream.once('open', () => {
-                stream.write(uploadFile.data, writeErr => {
-                    if (writeErr) {
-                        return res.status(500).send(`Failed to write content ${savePath}.`);
-                    }
-                    stream.close();
-                    console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
-                })
-            });
-            console.log("Moved");
-        },
-    );
-    body.image = uniqueFileName;
+        uploadFile.mv(savePath,
+            function (err) {
+                if (err) {
+                    return res.status(500).send(err)
+                }
+                const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
+                stream.once('open', () => {
+                    stream.write(uploadFile.data, writeErr => {
+                        if (writeErr) {
+                            return res.status(500).send(`Failed to write content ${savePath}.`);
+                        }
+                        stream.close();
+                        console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
+                    })
+                });
+                console.log("Moved");
+            },
+        );
+        body.image = uniqueFileName;
+    }
     Contest.update(body,
         {
             where: {

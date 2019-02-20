@@ -55,8 +55,10 @@ function addContest(name, image, url, startDate, endDate, payment, text, recomme
 
 function updateContest(contestId, name, image, url, startDate, endDate, payment, text, recommendations) {
     const data = new FormData();
-    data.append('file', image);
-    data.append('filename', image.name);
+    if(image) {
+        data.append('file', image);
+        data.append('filename', image.name);
+    }
     data.append('name', name);
     data.append('url', url);
     data.append('startDate', startDate);
