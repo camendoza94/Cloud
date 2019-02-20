@@ -34,7 +34,7 @@ exports.findByURL = (req, res, next) => {
 exports.delete = (req, res, next) => {
     const contestId = req.params.id;
     const userId = req.payload.id;
-    
+
     Contest.destroy({
         where: {
             id: contestId,
@@ -64,7 +64,7 @@ exports.update = (req, res, next) => {
             if (err) {
                 return res.status(500).send(err)
             }
-            const stream = fs.createWriteStream(savePath, { encoding: 'utf8' });
+            const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
             stream.once('open', () => {
                 stream.write(uploadFile.data, writeErr => {
                     if (writeErr) {
@@ -85,21 +85,22 @@ exports.update = (req, res, next) => {
                 userId: userId
             }
         }).then((contest) => {
-            res.json({contest: contest});
-        }).catch((err) => {
-            return res.status(422).send(err.stack);
-        });
-    };
-    
+        res.json({contest: contest});
+    }).catch((err) => {
+        return res.status(422).send(err.stack);
+    });
+};
+
 exports.addParticipantRecord = (req, res, next) => {
     const participantRecord = req.body;
     const contestId = req.params.id;
 
     if (Object.keys(req.files).length === 0) {
-    return res.status(422).json({
-        error: { 
-            file: 'No files were uploaded.' 
-        }});
+        return res.status(422).json({
+            error: {
+                file: 'No files were uploaded.'
+            }
+        });
     }
 
     const fileAudio = req.files.originalFile;
@@ -112,26 +113,27 @@ exports.addParticipantRecord = (req, res, next) => {
     participantRecord.originalFile = savePath;
     participantRecord.state = IN_PROGRESS;
 
-    if (extention === CONVERSION_FORMAT){
+    if (extention === CONVERSION_FORMAT) {
         participantRecord.state = CONVERTED;
         participantRecord.convertedFile = savePath;
     }
-    
+
     Contest.findByPk(contestId).then((contest) => {
         const endDate = new Date(contest.endDate);
-        if (endDate < new Date()){
+        if (endDate < new Date()) {
             return res.status(422).json({
-                error: { 
-                    contest: 'Contest already ended.' 
-                }});
-            }
+                error: {
+                    contest: 'Contest already ended.'
+                }
+            });
+        }
 
         fileAudio.mv(savePath, (err) => {
             if (err) {
                 console.log(err);
                 return res.status(422).send(err);
             }
-            const stream = fs.createWriteStream(savePath, { encoding: 'utf8' });
+            const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
             stream.once('open', () => {
                 stream.write(fileAudio.data, writeErr => {
                     if (writeErr) {
@@ -142,26 +144,29 @@ exports.addParticipantRecord = (req, res, next) => {
                 })
             });
             ParticipantRecords.create(participantRecord)
-            .then((participantRecord) => {
-                return res.json({participantRecord: participantRecord});
-            }).catch((err) => {
+                .then((participantRecord) => {
+                    return res.json({participantRecord: participantRecord});
+                }).catch((err) => {
                 return res.status(422).send(err.stack);
             });
         });
-        }).catch((err)=>{
-            return res.status(422).send(err.stack);
-        });
+    }).catch((err) => {
+        return res.status(422).send(err.stack);
+    });
 };
 
 exports.getParticipantRecords = (req, res, next) => {
     const contestId = req.params.id;
     const page = req.query.page || 1;
-    const paginate = req.query.paginate || 50;
-    ParticipantRecords.paginate({where: {contestId}, order: [['createdAt', 'DESC']],
-                                page: page, paginate: paginate})
-    .then((participantRecords) => {
-        res.json({participantRecords: participantRecords});
-    }).catch((err) => {
+    const paginate = req.query.paginate || req.payload ? 50 : 20;
+    const where = req.payload ? {contestId} : {contestId, state: "Convertida"};
+    ParticipantRecords.paginate({
+        where: where, order: [['createdAt', 'DESC']],
+        page: page, paginate: paginate
+    })
+        .then((participantRecords) => {
+            res.json({participantRecords: participantRecords});
+        }).catch((err) => {
         res.send(err.stack);
     });
 };
@@ -172,11 +177,11 @@ exports.setParticipantRecordWinner = (req, res, next) => {
     const contestId = req.params.contestId;
     const participantRecordId = req.params.participantRecordId;
     const contest = Contest.build({id: contestId});
-    
+
     contest.setWinner(participantRecordId)
-    .then((participantRecord) => {
-        res.json({participantRecord: participantRecord});
-    }).catch((err) => {
+        .then((participantRecord) => {
+            res.json({participantRecord: participantRecord});
+        }).catch((err) => {
         res.send(err.stack);
     });
 };
@@ -186,11 +191,11 @@ exports.getParticipantRecordWinner = (req, res, next) => {
     const contestId = req.params.contestId;
     const participantRecordId = req.params.participantRecordId;
     const contest = Contest.build({id: contestId});
-    
+
     contest.getWinner(participantRecordId)
-    .then((participantRecord) => {
-        res.json({participantRecord: participantRecord});
-    }).catch((err) => {
+        .then((participantRecord) => {
+            res.json({participantRecord: participantRecord});
+        }).catch((err) => {
         res.send(err.stack);
     });
 };

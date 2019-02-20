@@ -11,7 +11,6 @@ class ContestDetail extends Component {
         super(props);
         this.state = {
             participantRecords: [],
-            contest: {},
             page: 1,
             totalPages: 1,
             loading: true
@@ -112,7 +111,7 @@ class ContestDetail extends Component {
                         &#x3C;
                         </button>
                     </li>}
-                    {page !== totalPages &&
+                    {page < totalPages &&
                     <li className="page-item">
                         <button className="page-link" onClick={()=>{this.getParticipantRecords(contest.id, page + 1)}}>
                         &#x3E;

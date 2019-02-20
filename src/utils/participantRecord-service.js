@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {authHeader} from "./auth-header";
 
 export const participantRecordService = {
     createParticipantRecord,
@@ -7,11 +8,15 @@ export const participantRecordService = {
 
 function getParticipantRecords(contestId, page) {
     page = page || 1;
-    return axios.get(`${process.env.REACT_APP_ROOT_URL}/contests/${contestId}/participantRecords?page=${page}`);
+    return axios({
+        method: 'get',
+        url: `${process.env.REACT_APP_ROOT_URL}/contests/${contestId}/participantRecords?page=${page}`,
+        headers: authHeader()
+    });
 }
 
-function createParticipantRecord(contestId, participantRecordForm){
+function createParticipantRecord(contestId, participantRecordForm) {
     return axios.post(`${process.env.REACT_APP_ROOT_URL}/contests/${contestId}/participantRecords`,
-                        participantRecordForm);
+        participantRecordForm);
 }
 
