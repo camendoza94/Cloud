@@ -94,11 +94,11 @@ exports.convertFiles = () => {
     ParticipantRecords.findAll({where: {state: IN_PROGRESS}}).then((records) => {
         records.map((record) => {
             //Convert file
-            console.log(record)
+            console.log(record);
             const fileName = path.basename(record.dataValues.originalFile).split('.');
             fileName.pop();
             const convertedFile = `${CONVERTED_PATH}${fileName}.mp3`;
-            console.timeLog('Conversion', convertedFile);
+            console.timeLog('Conversion');
             const recordId = record.dataValues.id;
             const participantEmail = record.dataValues.email;
                             
@@ -111,7 +111,7 @@ exports.convertFiles = () => {
                             console.log(`Status change for record ${recordId}`);
                             // Email
                             sendEmail(participantEmail);
-                            console.timeLog('Conversion', convertedFile);
+                            console.timeLog('Conversion');
                         })
                         .catch((err) => {
                             console.log(err.stack);

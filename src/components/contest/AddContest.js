@@ -7,7 +7,7 @@ class AddContest extends Component {
         super(props);
         this.state = {
             name: (this.props.location.state && this.props.location.state.name) || '',
-            image: (this.props.location.state && this.props.location.state.image) || '',
+            image: '',
             url: (this.props.location.state && this.props.location.state.url) || '',
             startDate: (this.props.location.state && this.props.location.state.startDate.substr(0, 10)) || '',
             endDate: (this.props.location.state && this.props.location.state.endDate.substr(0, 10)) || '',
@@ -43,7 +43,7 @@ class AddContest extends Component {
         this.setState({loading: true});
         const file = this.imageFile.files[0];
         if (edit) {
-            contestService.updateContest(name, file, url, startDate, endDate, payment, text, recommendations)
+            contestService.updateContest(this.props.match.params.id, name, file, url, startDate, endDate, payment, text, recommendations)
                 .then(() => {
                     this.props.history.push({pathname: "/"});
                 })
@@ -79,6 +79,9 @@ class AddContest extends Component {
                         <div className="help-block alert">Name is required</div>
                         }
                     </div>
+                    {this.props.location.state && this.props.location.state.image &&
+                    <img src={(this.imageFile && URL.createObjectURL(this.imageFile.files[0])) || `${process.env.REACT_APP_ROOT_URL}/images/${this.props.location.state.image}`}
+                         alt={`Event: ${name}`} className="img-thumbnail"/>}
                     <div className={'form-group' + (submitted && !image ? ' has-error' : '')}>
                         <label htmlFor="image">Image</label>
                         <input type="file" className="form-control" name="image" value={image}
