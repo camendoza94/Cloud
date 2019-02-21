@@ -24,7 +24,7 @@ class ParticipantRecord extends Component {
                             </div>
                             {participantRecord.state === CONVERTED &&
                                 <div className="col-md-12">
-                                    <audio controls controlsList="nodownload">
+                                    <audio controls controlsList="nodownload" preload="none" >
                                     <source src={`${process.env.REACT_APP_ROOT_URL}${participantRecord.convertedFile.split('server')[1]}`}
                                             type="audio/mp3"/>
                                     Your browser does not support the audio element
