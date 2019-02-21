@@ -108,7 +108,8 @@ exports.convertFiles = () => {
                     ParticipantRecords.update({state: CONVERTED, convertedFile: convertedFile}, {where: {id: recordId} } )
                         .then((record) => {
                             console.log(`Status change for record ${recordId}`);
-                            // Email
+                            // Email                            
+                            console.timeLog(`Record Conversion ${convertedFile}`, 'After email');
                             sendEmail(participantEmail);
                             console.timeEnd(`Record Conversion ${convertedFile}`);
                         })
