@@ -103,13 +103,12 @@ exports.convertFiles = () => {
                             
             ffmpeg(record.dataValues.originalFile).toFormat(CONVERSION_FORMAT)
                 .on('end', (result) => {
-                    console.log(`End: ${result}`);
                     // Change state of participantRecord
                     ParticipantRecords.update({state: CONVERTED, convertedFile: convertedFile}, {where: {id: recordId} } )
                         .then((record) => {
                             console.log(`Status change for record ${recordId}`);
                             // Email                            
-                            console.timeLog(`Record Conversion ${convertedFile}`, 'After email');
+                            console.timeLog(`Record Conversion ${convertedFile}`, 'Before email');
                             sendEmail(participantEmail);
                             console.timeEnd(`Record Conversion ${convertedFile}`);
                         })
