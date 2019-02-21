@@ -53,7 +53,7 @@ exports.update = (req, res, next) => {
         params: {id}
     } = req;
     const userId = req.payload.id;
-    let uploadFile = req.files.file;
+    let uploadFile = req.files && req.files.file;
     if (uploadFile) {
         const extension = uploadFile.name.split('.').pop();
         const uniqueFileName = `${uuid.v4()}.${extension}`;
