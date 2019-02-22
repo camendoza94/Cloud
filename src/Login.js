@@ -44,8 +44,8 @@ class Login extends Component {
                 const {from} = this.props.location.state || {from: {pathname: "/"}};
                 this.props.history.push(from);
             })
-            .catch(() => {
-                    this.setState({error: "Wrong username or password.", loading: false});
+            .catch((err) => {
+                    this.setState({error: err.response.data.error, loading: false});
                 }
             )
 

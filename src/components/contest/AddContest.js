@@ -48,7 +48,7 @@ class AddContest extends Component {
                     this.props.history.push({pathname: "/"});
                 })
                 .catch(err => {
-                        this.setState({error: err.toString(), loading: false});
+                        this.setState({error: err.response.data.error, loading: false});
                     }
                 )
         } else {
@@ -58,7 +58,7 @@ class AddContest extends Component {
                     this.props.history.push(from);
                 })
                 .catch(err => {
-                        this.setState({error: err.toString(), loading: false});
+                        this.setState({error: err.response.data.error, loading: false});
                     }
                 )
         }
