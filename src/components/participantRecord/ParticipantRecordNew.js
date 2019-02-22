@@ -7,6 +7,7 @@ class ParticipantRecordNew extends Component {
     constructor(props){
         super(props);
         this.createParticipantRecord = this.createParticipantRecord.bind(this);
+        this.state= {};
     }
 
     createParticipantRecord(formData){
@@ -18,14 +19,14 @@ class ParticipantRecordNew extends Component {
                     this.props.history.goBack();
                 }).catch((err) => {
                     console.log(err);
-                   // window.location.reload();
+                    this.setState({error: "Contest already ended"});
                 })
     }
 
     render() {
         return  <div className="col-md-12 offset-md-3">
                     <h2>Add new audio voice</h2>
-                    <ParticipantRecordForm onSubmitForm={this.createParticipantRecord} />
+                    <ParticipantRecordForm onSubmitForm={this.createParticipantRecord} error={this.state.error || false} />
                 </div>
     }
 }
