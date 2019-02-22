@@ -50,7 +50,7 @@ function addContest(name, image, url, startDate, endDate, payment, text, recomme
         data: data,
         headers: authHeader()
     }).then(contests => contests)
-        .catch(err => err);
+        .catch(err => Promise.reject(err));
 }
 
 function updateContest(contestId, name, image, url, startDate, endDate, payment, text, recommendations) {
@@ -72,5 +72,5 @@ function updateContest(contestId, name, image, url, startDate, endDate, payment,
         data: data,
         headers: authHeader()
     }).then(contests => contests)
-        .catch(err => err);
+        .catch(err => Promise.reject(err));
 }

@@ -52,7 +52,6 @@ class ContestDetail extends Component {
     deleteContest() {
         const contest = (this.props.location.state && this.props.location.state.contest) || this.state.contest;
         contestService.deleteContest(contest.id).then(response => {
-            console.log(response);
             this.props.history.push('/');
         });
     }

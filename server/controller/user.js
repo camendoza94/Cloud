@@ -29,17 +29,17 @@ exports.registerUser = (req, res, next) => {
 
     setPassword(finalUser, user.password);
     return User.create({
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            hash: finalUser.hash,
-            salt: finalUser.salt
-        }).then( (newUser) => {
-            user.token = generateJWT(newUser);
-            res.json({user: toAuthJSON(newUser)});
-        }).catch(() => {
-            return res.status(400).send({ error: "User already exists." });
-        });
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        hash: finalUser.hash,
+        salt: finalUser.salt
+    }).then((newUser) => {
+        user.token = generateJWT(newUser);
+        res.json({user: toAuthJSON(newUser)});
+    }).catch(() => {
+        return res.status(400).send({error: "User already exists."});
+    });
 };
 
 exports.logIn = (req, res, next) => {
@@ -80,16 +80,16 @@ exports.current = (req, res, next) => {
     const {payload: {id}} = req;
 
     User.findByPk(id).then((user) => {
-                            res.json({user: toAuthJSON(user)});
-                        }).catch((err) => {
-                            return res.send(err.stack);
-                        });
+        res.json({user: toAuthJSON(user)});
+    }).catch((err) => {
+        return res.send(err.stack);
+    });
 };
 
 exports.getContests = (req, res, next) => {
     const userId = req.params.id;
     const {payload: {id}} = req;
-    if(parseInt(userId) !== parseInt(id)) {
+    if (parseInt(userId) !== parseInt(id)) {
         return res.status(401).json({
             errors: {
                 name: 'unauthorized',
@@ -100,7 +100,7 @@ exports.getContests = (req, res, next) => {
     const page = req.query.page || 1;
     const paginate = req.query.paginate || 50;
 
-    Contest.paginate({ where: {userId: id}, page: page, paginate: paginate}).then((contests) => {
+    Contest.paginate({where: {userId: id}, page: page, paginate: paginate}).then((contests) => {
         res.json({contests: contests});
     }).catch((err) => {
         return res.send(err.stack);
@@ -122,7 +122,7 @@ exports.addContests = (req, res, next) => {
             if (err) {
                 return res.status(500).send(err)
             }
-            const stream = fs.createWriteStream(savePath, { encoding: 'utf8' });
+            const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
             stream.once('open', () => {
                 stream.write(uploadFile.data, writeErr => {
                     if (writeErr) {
@@ -138,7 +138,7 @@ exports.addContests = (req, res, next) => {
 
 
     const {payload: {id}} = req;
-    if(parseInt(userId) !== parseInt(id)) {
+    if (parseInt(userId) !== parseInt(id)) {
         return res.status(401).json({
             errors: {
                 name: 'unauthorized',
@@ -216,7 +216,7 @@ exports.addContests = (req, res, next) => {
     body.image = uniqueFileName;
     Contest.create(body).then((contest) => {
         res.json({contest: contest});
-    }).catch((err) => {
-        return res.send(err.stack);
+    }).catch(() => {
+        return res.status(400).send({error: "Contest with given URL already exists."});
     })
 };

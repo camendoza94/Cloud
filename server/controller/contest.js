@@ -87,8 +87,8 @@ exports.update = (req, res, next) => {
             }
         }).then((contest) => {
         res.json({contest: contest});
-    }).catch((err) => {
-        return res.status(422).send(err.stack);
+    }).catch(() => {
+        return res.status(400).send({error: "Contest with given URL already exists."});
     });
 };
 
