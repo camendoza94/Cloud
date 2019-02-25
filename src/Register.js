@@ -69,9 +69,9 @@ class Register extends Component {
                     <div className="form-group">
                         <label htmlFor="firstName">First name</label>
                         <input type="text"
-                               className={'form-control' + (submitted && !firstName ? ' is-invalid' : (submitted && firstName) ? ' is-valid' : '')}
-                               name="firstName" value={firstName}
-                               onChange={this.handleChange}/>
+                            className={'form-control' + (submitted && !firstName ? ' is-invalid' : (submitted && firstName) ? ' is-valid' : '')}
+                            name="firstName" value={firstName}
+                            onChange={this.handleChange}/>
                         {submitted && !firstName &&
                         <div className="text-muted">First name is required</div>
                         }
@@ -79,9 +79,9 @@ class Register extends Component {
                     <div className="form-group">
                         <label htmlFor="lastName">Last name</label>
                         <input type="text"
-                               className={'form-control' + (submitted && !lastName ? ' is-invalid' : (submitted && lastName) ? ' is-valid' : '')}
-                               name="lastName" value={lastName}
-                               onChange={this.handleChange}/>
+                            className={'form-control' + (submitted && !lastName ? ' is-invalid' : (submitted && lastName) ? ' is-valid' : '')}
+                            name="lastName" value={lastName}
+                            onChange={this.handleChange}/>
                         {submitted && !lastName &&
                         <div className="text-muted">Last name is required</div>
                         }
@@ -89,9 +89,9 @@ class Register extends Component {
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <input type="email"
-                               className={'form-control' + (submitted && !email ? ' is-invalid' : (submitted && email) ? ' is-valid' : '')}
-                               name="email" value={email}
-                               onChange={this.handleChange}/>
+                            className={'form-control' + (submitted && !email ? ' is-invalid' : (submitted && email) ? ' is-valid' : '')}
+                            name="email" value={email}
+                            onChange={this.handleChange}/>
                         {submitted && !email &&
                         <div className="text-muted">Email is required</div>
                         }
@@ -99,9 +99,9 @@ class Register extends Component {
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
                         <input type="password"
-                               className={'form-control' + (submitted && (!password || !passwordRequiredLength) ? ' is-invalid' : (submitted && password && passwordRequiredLength) ? ' is-valid' : '')}
-                               name="password" value={password}
-                               onChange={this.handleChangePassword}/>
+                            className={'form-control' + (submitted && (!password || !passwordRequiredLength) ? ' is-invalid' : (submitted && password && passwordRequiredLength) ? ' is-valid' : '')}
+                            name="password" value={password}
+                            onChange={this.handleChangePassword}/>
                         {submitted && !password &&
                         <div className="text-muted">Password is required</div>
                         }
@@ -112,9 +112,9 @@ class Register extends Component {
                     <div className={'form-group'}>
                         <label htmlFor="passwordConfirm">Confirm password</label>
                         <input type="password"
-                               className={'form-control' + (submitted && (!passwordConfirm || !passwordRequiredLength || !(password === passwordConfirm)) ? ' is-invalid' : (submitted && passwordConfirm && (password === passwordConfirm) && passwordRequiredLength) ? ' is-valid' : '')}
-                               name="passwordConfirm" value={passwordConfirm}
-                               onChange={this.handleChangePassword}/>
+                            className={'form-control' + (submitted && (!passwordConfirm || !passwordRequiredLength || !(password === passwordConfirm)) ? ' is-invalid' : (submitted && passwordConfirm && (password === passwordConfirm) && passwordRequiredLength) ? ' is-valid' : '')}
+                            name="passwordConfirm" value={passwordConfirm}
+                            onChange={this.handleChangePassword}/>
                         {submitted && !passwordConfirm &&
                         <div className="text-muted">Password confirmation is required</div>
                         }
@@ -126,7 +126,7 @@ class Register extends Component {
                         <button className="btn btn-primary" disabled={loading}>Register</button>
                         {loading &&
                         <img alt=""
-                             src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+                            src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
                         }
                     </div>
                     <p>Already have an account? Click <Link to='/login'>here</Link></p>

@@ -33,7 +33,7 @@ module.exports = (sequelize, Sequelize) => {
         }
     });
 
-    sequelizePaginate.paginate(Contest)
+    sequelizePaginate.paginate(Contest);
 
     return Contest;
 };

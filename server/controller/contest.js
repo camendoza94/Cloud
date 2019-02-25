@@ -148,8 +148,8 @@ exports.addParticipantRecord = (req, res, next) => {
                 .then((participantRecord) => {
                     return res.json({participantRecord: participantRecord});
                 }).catch((err) => {
-                return res.status(422).send(err.stack);
-            });
+                    return res.status(422).send(err.stack);
+                });
         });
     }).catch((err) => {
         return res.status(422).send(err.stack);
@@ -168,8 +168,8 @@ exports.getParticipantRecords = (req, res, next) => {
         .then((participantRecords) => {
             res.json({participantRecords: participantRecords});
         }).catch((err) => {
-        res.send(err.stack);
-    });
+            res.send(err.stack);
+        });
 };
 
 
@@ -183,8 +183,8 @@ exports.setParticipantRecordWinner = (req, res, next) => {
         .then((participantRecord) => {
             res.json({participantRecord: participantRecord});
         }).catch((err) => {
-        res.send(err.stack);
-    });
+            res.send(err.stack);
+        });
 };
 
 exports.getParticipantRecordWinner = (req, res, next) => {
@@ -197,7 +197,7 @@ exports.getParticipantRecordWinner = (req, res, next) => {
         .then((participantRecord) => {
             res.json({participantRecord: participantRecord});
         }).catch((err) => {
-        res.send(err.stack);
-    });
+            res.send(err.stack);
+        });
 };
             

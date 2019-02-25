@@ -23,7 +23,7 @@ class HomePage extends Component {
         this.getContests(this.state.page);
     }
 
-    getContests(page){
+    getContests(page) {
         page = page || 1;
         contestService.getAll(page).then(response => {
             this.setState({contests: response.data.contests.docs})
@@ -40,24 +40,28 @@ class HomePage extends Component {
                     <Link to="/login">Logout</Link>
                 </div>
                 <div>
-                {contests.map((contest, id) => {
-                    return <Contest contest={contest} user={user} key={id} id={id}/>
-                })}
+                    {contests.map((contest, id) => {
+                        return <Contest contest={contest} user={user} key={id} id={id}/>
+                    })}
                 </div>
                 <div className="container">
                     <ul className="pagination">
-                    {page !== 1 &&
-                    <li className="page-item">
-                        <button className="page-link" onClick={()=>{this.getContests(page - 1)}}>
-                        &#x3C;
-                        </button>
-                    </li>}
-                    {page !== totalPages &&
-                    <li className="page-item">
-                        <button className="page-link" onClick={()=>{this.getContests(page + 1)}}>
-                        &#x3E;
-                        </button>
-                    </li>}
+                        {page !== 1 &&
+                        <li className="page-item">
+                            <button className="page-link" onClick={() => {
+                                this.getContests(page - 1)
+                            }}>
+                                &#x3C;
+                            </button>
+                        </li>}
+                        {page !== totalPages &&
+                        <li className="page-item">
+                            <button className="page-link" onClick={() => {
+                                this.getContests(page + 1)
+                            }}>
+                                &#x3E;
+                            </button>
+                        </li>}
                     </ul>
                 </div>
             </div>

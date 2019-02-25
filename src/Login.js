@@ -45,8 +45,8 @@ class Login extends Component {
                 this.props.history.push(from);
             })
             .catch((err) => {
-                    this.setState({error: err.response.data.error, loading: false});
-                }
+                this.setState({error: err.response.data.error, loading: false});
+            }
             )
 
     }
@@ -54,19 +54,21 @@ class Login extends Component {
     render() {
         const {email, password, submitted, loading, error} = this.state;
         return (
-                <>
+            <div>
                 <div id="banner" className="col-md-12 text-center">
-                <img alt="" src="images/127781-200.png" className="img-responsive"/>
-                <h1>Escoge al mejor locutor para tu proyecto.</h1>
+                    <img alt="" src="images/127781-200.png" className="img-responsive"/>
+                    <h1>Escoge al mejor locutor para tu proyecto.</h1>
                     <h2>Para publicidad, presentaciones, anuncios de películas, videos de productos,
-                    videojuegos y más</h2>
+                        videojuegos y más</h2>
                 </div>
                 <div id="login" className="col-md-6 offset-md-3">
                     <h2>Login</h2>
                     <form name="form" onSubmit={this.handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
-                            <input type="email" className={'form-control' + (submitted && !email ? ' is-invalid' : (submitted && email) ? ' is-valid' : '')} name="email" value={email}
+                            <input type="email"
+                                className={'form-control' + (submitted && !email ? ' is-invalid' : (submitted && email) ? ' is-valid' : '')}
+                                name="email" value={email}
                                 onChange={this.handleChange}/>
                             {submitted && !email &&
                             <div className="text-muted">Email is required</div>
@@ -74,7 +76,9 @@ class Login extends Component {
                         </div>
                         <div className="form-group">
                             <label htmlFor="password">Password</label>
-                            <input type="password" className={'form-control' + (submitted && !password ? ' is-invalid' : (submitted && password) ? ' is-valid' : '')} name="password" value={password}
+                            <input type="password"
+                                className={'form-control' + (submitted && !password ? ' is-invalid' : (submitted && password) ? ' is-valid' : '')}
+                                name="password" value={password}
                                 onChange={this.handleChange}/>
                             {submitted && !password &&
                             <div className="text-muted">Password is required</div>
@@ -93,7 +97,7 @@ class Login extends Component {
                         }
                     </form>
                 </div>
-            </>
+            </div>
         );
     }
 }
