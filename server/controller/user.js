@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const {setPassword, generateJWT, toAuthJSON} = require('../config/passport');
 const {IMAGE_PATH} = require('../constants');
 const db = require('../config/db');
@@ -8,7 +9,7 @@ const uuid = require('uuid/v4');
 const fs = require('fs');
 
 
-exports.registerUser = (req, res, next) => {
+exports.registerUser = (req, res) => {
     const {body: {user}} = req;
     if (!user.email) {
         return res.status(422).json({
@@ -61,7 +62,7 @@ exports.logIn = (req, res, next) => {
         });
     }
 
-    return passport.authenticate('local', {session: false}, (err, passportUser, info) => {
+    return passport.authenticate('local', {session: false}, (err, passportUser) => {
         if (err) {
             return next(err);
         }
@@ -76,7 +77,7 @@ exports.logIn = (req, res, next) => {
     })(req, res, next);
 };
 
-exports.current = (req, res, next) => {
+exports.current = (req, res) => {
     const {payload: {id}} = req;
 
     User.findByPk(id).then((user) => {
@@ -86,7 +87,7 @@ exports.current = (req, res, next) => {
     });
 };
 
-exports.getContests = (req, res, next) => {
+exports.getContests = (req, res) => {
     const userId = req.params.id;
     const {payload: {id}} = req;
     if (parseInt(userId) !== parseInt(id)) {
@@ -100,14 +101,17 @@ exports.getContests = (req, res, next) => {
     const page = req.query.page || 1;
     const paginate = req.query.paginate || 50;
 
-    Contest.paginate({where: {userId: id}, page: page, paginate: paginate}).then((contests) => {
+    Contest.paginate({
+        where: {userId: id}, order: [['name', 'DESC']],
+        page: page, paginate: paginate
+    }).then((contests) => {
         res.json({contests: contests});
     }).catch((err) => {
         return res.send(err.stack);
     })
 };
 
-exports.addContests = (req, res, next) => {
+exports.addContests = (req, res) => {
     const userId = req.params.id;
     const {body} = req;
     body.userId = userId;

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const {IN_PROGRESS, UPLOAD_PATH, CONVERSION_FORMAT, CONVERTED, IMAGE_PATH} = require('../constants');
 const db = require('../config/db');
 const Contest = db.contests;
@@ -5,7 +6,7 @@ const ParticipantRecords = db.participantRecords;
 const uuid = require('uuid/v4');
 const fs = require('fs');
 
-exports.findAll = (req, res, next) => {
+exports.findAll = (req, res) => {
     Contest.findAll().then((contests) => {
         res.json({contests: contests});
     }).catch((err) => {
@@ -13,7 +14,7 @@ exports.findAll = (req, res, next) => {
     });
 };
 
-exports.findById = (req, res, next) => {
+exports.findById = (req, res) => {
     const {params: {id}} = req;
     Contest.findById(id).then((contest) => {
         res.json({contest: contest});
@@ -22,7 +23,7 @@ exports.findById = (req, res, next) => {
     });
 };
 
-exports.findByURL = (req, res, next) => {
+exports.findByURL = (req, res) => {
     const {params: {url}} = req;
     Contest.findOne({where: {url: url}}).then((contest) => {
         res.json({contest: contest});
@@ -31,7 +32,7 @@ exports.findByURL = (req, res, next) => {
     });
 };
 
-exports.delete = (req, res, next) => {
+exports.delete = (req, res) => {
     const contestId = req.params.id;
     const userId = req.payload.id;
 
@@ -47,7 +48,7 @@ exports.delete = (req, res, next) => {
     });
 };
 
-exports.update = (req, res, next) => {
+exports.update = (req, res) => {
     const {
         body,
         params: {id}
@@ -92,7 +93,7 @@ exports.update = (req, res, next) => {
     });
 };
 
-exports.addParticipantRecord = (req, res, next) => {
+exports.addParticipantRecord = (req, res) => {
     const participantRecord = req.body;
     const contestId = req.params.id;
 
@@ -156,7 +157,7 @@ exports.addParticipantRecord = (req, res, next) => {
     });
 };
 
-exports.getParticipantRecords = (req, res, next) => {
+exports.getParticipantRecords = (req, res) => {
     const contestId = req.params.id;
     const page = req.query.page || 1;
     const paginate = req.query.paginate || req.payload ? 50 : 20;
@@ -173,7 +174,7 @@ exports.getParticipantRecords = (req, res, next) => {
 };
 
 
-exports.setParticipantRecordWinner = (req, res, next) => {
+exports.setParticipantRecordWinner = (req, res) => {
     //Use Contest.setWinner
     const contestId = req.params.contestId;
     const participantRecordId = req.params.participantRecordId;
@@ -187,7 +188,7 @@ exports.setParticipantRecordWinner = (req, res, next) => {
         });
 };
 
-exports.getParticipantRecordWinner = (req, res, next) => {
+exports.getParticipantRecordWinner = (req, res) => {
     //Use Contest.getWinner
     const contestId = req.params.contestId;
     const participantRecordId = req.params.participantRecordId;

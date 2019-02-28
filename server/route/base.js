@@ -1,6 +1,6 @@
 module.exports = (app) => {
     app.get('/', (req, res) => {
-        let routes = [];
+        let routes;
         routes = app._router.stack.map(route => {
             return route.route || '';
         });
