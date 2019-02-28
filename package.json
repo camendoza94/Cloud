@@ -2,9 +2,9 @@
   "name": "proyecto1cloud",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://172.24.42.74",
+  "homepage": "http://cloudgrupo1.hopto.org",
   "dependencies": {
-    "@sendgrid/mail": "^6.3.1",
+    "aws-sdk": "^2.411.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
