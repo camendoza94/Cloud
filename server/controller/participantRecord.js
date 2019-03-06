@@ -1,13 +1,9 @@
 const db = require('../config/db');
 const ParticipantRecords = db.participantRecords;
-const {sendEmail} = require('../config/mailer');
-const {IN_PROGRESS, CONVERTED, CONVERTED_PATH, CONVERSION_FORMAT} = require('../constants');
 
-const ffmpeg = require('fluent-ffmpeg');
-const path = require('path');
 const ms = require('mediaserver');
 
-exports.findAll = (req, res, next) => {
+exports.findAll = (req, res) => {
     ParticipantRecords.findAll().then((contests) => {
         res.json({contests: contests});
     }).catch((err) => {
@@ -15,7 +11,7 @@ exports.findAll = (req, res, next) => {
     });
 };
 
-exports.findById = (req, res, next) => {
+exports.findById = (req, res) => {
     const {params: {id}} = req;
     ParticipantRecords.findByPk(id).then((contest) => {
         res.json({contest: contest});
@@ -24,7 +20,7 @@ exports.findById = (req, res, next) => {
     });
 };
 
-exports.originalFile = (req, res, next) => {
+exports.originalFile = (req, res) => {
     const {params: {id}} = req;
 
     ParticipantRecords.findById(id).then((participantRecord) => {
@@ -39,7 +35,7 @@ exports.originalFile = (req, res, next) => {
     });
 };
 
-exports.convertedFile = (req, res, next) => {
+exports.convertedFile = (req, res) => {
     const {params: {id}} = req;
 
     ParticipantRecords.findById(id).then((participantRecord) => {
@@ -54,7 +50,7 @@ exports.convertedFile = (req, res, next) => {
     });
 };
 
-exports.originalFileDownload = (req, res, next) => {
+exports.originalFileDownload = (req, res) => {
     const {params: {id}} = req;
 
     ParticipantRecords.findById(id).then((contest) => {
@@ -69,7 +65,7 @@ exports.originalFileDownload = (req, res, next) => {
     });
 };
 
-exports.convertedFileDownload = (req, res, next) => {
+exports.convertedFileDownload = (req, res) => {
     const {params: {id}} = req;
 
     ParticipantRecords.findById(id).then((contest) => {
@@ -87,43 +83,3 @@ exports.convertedFileDownload = (req, res, next) => {
         return res.send(err.stack);
     });
 };
-
-exports.convertFiles = () => {
-
-    console.time('Conversion');
-    ParticipantRecords.findAll({where: {state: IN_PROGRESS}}).then((records) => {
-        records.map((record) => {
-            //Convert file
-            const fileName = path.basename(record.dataValues.originalFile).split('.');
-            fileName.pop();
-            const convertedFile = `${CONVERTED_PATH}${fileName}.mp3`;
-            console.time(`Record Conversion ${convertedFile}`);
-            const recordId = record.dataValues.id;
-            const participantEmail = record.dataValues.email;
-                            
-            ffmpeg(record.dataValues.originalFile).toFormat(CONVERSION_FORMAT)
-                .on('end', (result) => {
-                    // Change state of participantRecord
-                    ParticipantRecords.update({state: CONVERTED, convertedFile: convertedFile}, {where: {id: recordId} } )
-                        .then((record) => {
-                            console.log(`Status change for record ${recordId}`);
-                            // Email                            
-                            console.timeLog(`Record Conversion ${convertedFile}`, 'Before email');
-                            sendEmail(participantEmail);
-                            console.timeEnd(`Record Conversion ${convertedFile}`);
-                        })
-                        .catch((err) => {
-                            console.log(err.stack);
-                        });
-                })
-                .on('error', (err) => {
-                    console.log(`Error: ${err.message}`);
-
-                })
-                .save(convertedFile);
-        });
-    }).catch((err) => {
-        console.log(err.stack);
-    });    
-    console.timeEnd('Conversion');
-}
