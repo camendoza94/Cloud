@@ -220,7 +220,8 @@ exports.addContests = (req, res) => {
     body.image = uniqueFileName;
     Contest.create(body).then((contest) => {
         res.json({contest: contest});
-    }).catch(() => {
+    }).catch((err) => {
+        console.log(err);
         return res.status(400).send({error: "Contest with given URL already exists."});
     })
 };
