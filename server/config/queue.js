@@ -10,7 +10,7 @@ exports.sendMessage = (id) => {
         MessageAttributes: {
             "ID": {
                 DataType: "String",
-                StringValue: id
+                StringValue: id.toString()
             }
         },
         MessageBody: "Participant record with id " + id + " needs conversion.",
