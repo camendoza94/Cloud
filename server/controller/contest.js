@@ -5,6 +5,7 @@ const Contest = db.contests;
 const ParticipantRecords = db.participantRecords;
 const uuid = require('uuid/v4');
 const fs = require('fs');
+const {sendMessage} = require('../config/queue');
 
 exports.findAll = (req, res) => {
     Contest.findAll().then((contests) => {
@@ -147,6 +148,8 @@ exports.addParticipantRecord = (req, res) => {
             });
             ParticipantRecords.create(participantRecord)
                 .then((participantRecord) => {
+                    if(participantRecord.state === IN_PROGRESS)
+                        sendMessage(participantRecord.id);
                     return res.json({participantRecord: participantRecord});
                 }).catch((err) => {
                     return res.status(422).send(err.stack);
