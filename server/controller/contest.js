@@ -149,7 +149,7 @@ exports.addParticipantRecord = (req, res) => {
             ParticipantRecords.create(participantRecord)
                 .then((participantRecord) => {
                     if(participantRecord.state === IN_PROGRESS)
-                        sendMessage(participantRecord.id);
+                        sendMessage(participantRecord.id, `${process.env.REACT_APP_ROOT_URL}/${contest.url}`);
                     return res.json({participantRecord: participantRecord});
                 }).catch((err) => {
                     return res.status(422).send(err.stack);
