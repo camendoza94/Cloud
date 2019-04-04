@@ -68,8 +68,8 @@ exports.update = (req, res) => {
                 return res.status(500).send(err);
             }
             console.log("Success: ", data.Location);
-            body.image = data.Location;
         });
+        body.image = `${CLOUDFRONT}${savePath}`;
     }
     Contest.update(body,
         {
@@ -127,9 +127,9 @@ exports.addParticipantRecord = (req, res) => {
                 return res.status(422).send(err);
             }
             console.log("Success: ", data.Location);
-            participantRecord.originalFile = data.Location
+            participantRecord.originalFile = `${CLOUDFRONT}${savePath}`
             if (extention === CONVERSION_FORMAT) {
-                participantRecord.convertedFile = data.Location;
+                participantRecord.convertedFile = `${CLOUDFRONT}${savePath}`;
             }
             ParticipantRecords.create(participantRecord)
                 .then((participantRecord) => {

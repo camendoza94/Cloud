@@ -8,3 +8,5 @@ exports.CONVERTED_PATH = 'audio/converted/';
 exports.CONVERSION_FORMAT = 'mp3';
 
 exports.IMAGE_PATH = 'images/';
+
+exports.CLOUDFRONT = 'd16bb7ma8j5w3u.cloudfront.net/';
