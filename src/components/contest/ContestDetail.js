@@ -66,7 +66,7 @@ class ContestDetail extends Component {
                     <div className="card col-md-12">
                         {contest ? <div>
                             <img className="card-img-top" style={{width: '500px'}}
-                                 src={`${process.env.REACT_APP_ROOT_URL}/images/${contest.image}`} alt={contest.name}/>
+                                 src={contest.image} alt={contest.name}/>
                             <div className="card-body">
                                 <h5 className="card-title">{contest.name}</h5>
                             </div>

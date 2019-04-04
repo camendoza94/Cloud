@@ -16,16 +16,16 @@ class ParticipantRecord extends Component {
                             </ul>
                             <div className="btn btn-group">
                                 {user &&
-                                    <a href={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id}/originalFile/download`} 
-                                    className="btn btn-danger">Download Original audio file</a>}
+                                    <a href={participantRecord.originalFile} 
+                                    className="btn btn-danger" download>Download Original audio file</a>}
                                 {user && participantRecord.state === CONVERTED && 
-                                    <a href={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id}/convertedFile/download`}
-                                    className="btn btn-primary">Download Converted audio file</a>}
+                                    <a href={participantRecord.convertedFile}
+                                    className="btn btn-primary" download>Download Converted audio file</a>}
                             </div>
                             {participantRecord.state === CONVERTED &&
                                 <div className="col-md-12">
                                     <audio controls controlsList="nodownload" preload="none" >
-                                    <source src={`${process.env.REACT_APP_ROOT_URL}${participantRecord.convertedFile.split('var/nfs')[1]}`}
+                                    <source src={participantRecord.convertedFile}
                                             type="audio/mp3"/>
                                     Your browser does not support the audio element
                                     </audio>
