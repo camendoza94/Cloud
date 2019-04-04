@@ -4,7 +4,8 @@ const db = require('../config/db');
 const Contest = db.contests;
 const ParticipantRecords = db.participantRecords;
 const uuid = require('uuid/v4');
-const fs = require('fs');
+//const fs = require('fs');
+const {uploadFileS3} = require('../config/files');
 const {sendMessage} = require('../config/queue');
 
 exports.findAll = (req, res) => {
@@ -61,25 +62,14 @@ exports.update = (req, res) => {
         const uniqueFileName = `${uuid.v4()}.${extension}`;
         const savePath = `${IMAGE_PATH}${uniqueFileName}`;
 
-        uploadFile.mv(savePath,
-            function (err) {
-                if (err) {
-                    return res.status(500).send(err)
-                }
-                const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
-                stream.once('open', () => {
-                    stream.write(uploadFile.data, writeErr => {
-                        if (writeErr) {
-                            return res.status(500).send(`Failed to write content ${savePath}.`);
-                        }
-                        stream.close();
-                        console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
-                    })
-                });
-                console.log("Moved");
-            },
-        );
-        body.image = uniqueFileName;
+        uploadFileS3(savePath, uploadFile.data, (err, data) => {
+            if (err) {
+                console.log("Error: ", err);
+                return res.status(500).send(err);
+            }
+            console.log("Success: ", data.Location);
+            body.image = data.Location;
+        });
     }
     Contest.update(body,
         {
@@ -131,21 +121,16 @@ exports.addParticipantRecord = (req, res) => {
             });
         }
 
-        fileAudio.mv(savePath, (err) => {
+        uploadFileS3(savePath, fileAudio.data, (err, data) => {
             if (err) {
-                console.log(err);
+                console.log("Error: ", err);
                 return res.status(422).send(err);
             }
-            const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
-            stream.once('open', () => {
-                stream.write(fileAudio.data, writeErr => {
-                    if (writeErr) {
-                        return res.status(500).send(`Failed to write content ${savePath}.`);
-                    }
-                    stream.close();
-                    console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
-                })
-            });
+            console.log("Success: ", data.Location);
+            participantRecord.originalFile = data.Location
+            if (extention === CONVERSION_FORMAT) {
+                participantRecord.convertedFile = data.Location;
+            }
             ParticipantRecords.create(participantRecord)
                 .then((participantRecord) => {
                     if(participantRecord.state === IN_PROGRESS)
@@ -155,6 +140,7 @@ exports.addParticipantRecord = (req, res) => {
                     return res.status(422).send(err.stack);
                 });
         });
+
     }).catch((err) => {
         return res.status(422).send(err.stack);
     });
