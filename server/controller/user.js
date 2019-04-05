@@ -3,7 +3,8 @@ const {setPassword, generateJWT, toAuthJSON} = require('../config/passport');
 const {IMAGE_PATH} = require('../constants');
 const passport = require('passport');
 const uuid = require('uuid/v4');
-const fs = require('fs');
+//const fs = require('fs');
+const {uploadFileS3} = require('../config/files');
 const AWS = require('aws-sdk');
 
 const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
@@ -143,26 +144,17 @@ exports.addContests = (req, res) => {
     const uniqueFileName = `${uuid()}.${extension}`;
     const savePath = `${IMAGE_PATH}${uniqueFileName}`;
 
-    uploadFile.mv(savePath,
-        function (err) {
-            if (err) {
-                return res.status(500).send(err)
-            }
-            const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
-            stream.once('open', () => {
-                stream.write(uploadFile.data, writeErr => {
-                    if (writeErr) {
-                        return res.status(500).send(`Failed to write content ${savePath}.`);
-                    }
-                    stream.close();
-                    console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
-                })
-            });
-            console.log("Moved");
-        },
-    );
+    const upload = uploadFileS3(savePath, uploadFile.data).promise();
 
-
+    upload.then((data) => {
+        console.log("Success: ", data.Location);
+        body.image = `${CLOUDFRONT}${savePath}`;
+    }).catch((err)=>{
+        if (err) {
+            return res.status(500).send(err)
+        }
+    });
+    
     const {payload: {id}} = req;
     if (userId !== id) {
         return res.status(401).json({
@@ -239,7 +231,6 @@ exports.addContests = (req, res) => {
             },
         });
     }
-    body.image = uniqueFileName;
 
     const params = {
         TableName: 'Contests',
