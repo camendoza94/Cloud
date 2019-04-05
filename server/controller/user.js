@@ -149,13 +149,12 @@ exports.addContests = (req, res) => {
 
     upload.then((data) => {
         console.log("Success: ", data.Location);
-        body.image = `${CLOUDFRONT}${savePath}`;
     }).catch((err)=>{
         if (err) {
             return res.status(500).send(err)
         }
     });
-    
+    body.image = `${CLOUDFRONT}${savePath}`;
     const {payload: {id}} = req;
     if (userId !== id) {
         return res.status(401).json({
