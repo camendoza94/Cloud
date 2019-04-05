@@ -63,7 +63,7 @@ exports.update = (req, res) => {
         const extension = uploadFile.name.split('.').pop();
         const uniqueFileName = `${uuid()}.${extension}`;
         const savePath = `${IMAGE_PATH}${uniqueFileName}`;
-
+        req.setTimeout(0);
         const upload = uploadFileS3(savePath, uploadFile.data).promise();
 
         upload.then((data) => {
@@ -297,6 +297,7 @@ exports.addParticipantRecord = (req, res) => {
                         }
                     });
                 }
+                req.setTimeout(0);
                 const upload = uploadFileS3(savePath, fileAudio.data).promise();
 
                 upload.then((data)=>{

@@ -135,6 +135,7 @@ exports.getContests = (req, res) => {
 
 
 exports.addContests = (req, res) => {
+    req.setTimeout(0);
     const userId = req.params.id;
     const {body} = req;
     body.userId = userId;
