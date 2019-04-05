@@ -157,7 +157,7 @@ exports.update = (req, res) => {
         }).catch((err) => {
             if (err) {
                 console.log("Error: ", err);
-                return res.status(500).send(err);
+                return res.status(400).send(err);
             }
         });
     }else{
