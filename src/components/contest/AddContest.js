@@ -6,14 +6,14 @@ class AddContest extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: (this.props.location.state && this.props.location.state.name) || '',
+            name: (this.props.location.state && this.props.location.state.name.S) || '',
             image: '',
-            url: (this.props.location.state && this.props.location.state.url) || '',
-            startDate: (this.props.location.state && this.props.location.state.startDate.substr(0, 10)) || '',
-            endDate: (this.props.location.state && this.props.location.state.endDate.substr(0, 10)) || '',
-            payment: (this.props.location.state && this.props.location.state.payment) || '',
-            text: (this.props.location.state && this.props.location.state.text) || '',
-            recommendations: (this.props.location.state && this.props.location.state.recommendations) || '',
+            url: (this.props.location.state && this.props.location.state.url.S) || '',
+            startDate: (this.props.location.state && this.props.location.state.startDate.S.substr(0, 10)) || '',
+            endDate: (this.props.location.state && this.props.location.state.endDate.S.substr(0, 10)) || '',
+            payment: (this.props.location.state && this.props.location.state.payment.N) || '',
+            text: (this.props.location.state && this.props.location.state.text.S) || '',
+            recommendations: (this.props.location.state && this.props.location.state.recommendations.S) || '',
             edit: (this.props.location.state && this.props.location.state.edit) || false,
             submitted: false,
             loading: false,
@@ -95,7 +95,7 @@ class AddContest extends Component {
                     </div>
                     {((this.props.location.state && this.props.location.state.image) || imageSrc) &&
                     <img
-                        src={(this.imageFile && imageSrc) || `${process.env.REACT_APP_ROOT_URL}/images/${this.props.location.state.image}`}
+                        src={(this.imageFile && imageSrc) || `${process.env.REACT_APP_ROOT_URL}/images/${this.props.location.state.image.S}`}
                         alt={`Event: ${name}`} className="img-thumbnail"/>}
                     <div className="form-group">
                         <label htmlFor="image">Image</label>

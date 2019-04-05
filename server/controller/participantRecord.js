@@ -1,85 +1,61 @@
-const db = require('../config/db');
-const ParticipantRecords = db.participantRecords;
+const AWS = require('aws-sdk');
 
-const ms = require('mediaserver');
-
-exports.findAll = (req, res) => {
-    ParticipantRecords.findAll().then((contests) => {
-        res.json({contests: contests});
-    }).catch((err) => {
-        return res.send(err.stack);
-    });
-};
-
-exports.findById = (req, res) => {
-    const {params: {id}} = req;
-    ParticipantRecords.findByPk(id).then((contest) => {
-        res.json({contest: contest});
-    }).catch((err) => {
-        return res.send(err.stack);
-    });
-};
-
-exports.originalFile = (req, res) => {
-    const {params: {id}} = req;
-
-    ParticipantRecords.findById(id).then((participantRecord) => {
-        const originalFile = participantRecord.originalFile;
-        if(originalFile){
-            ms.pipe(req, res, originalFile);
-        } else {
-            return res.sendStatus(400);
-        }
-    }).catch((err) => {
-        return res.send(err.stack);
-    });
-};
-
-exports.convertedFile = (req, res) => {
-    const {params: {id}} = req;
-
-    ParticipantRecords.findById(id).then((participantRecord) => {
-        const convertedFile = participantRecord.convertedFile;
-        if(convertedFile){
-            ms.pipe(req, res, convertedFile);
-        } else {
-            return res.sendStatus(400);
-        }
-    }).catch((err) => {
-        return res.send(err.stack);
-    });
-};
+const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10', endpoint: "http://localhost:8000"},);
 
 exports.originalFileDownload = (req, res) => {
     const {params: {id}} = req;
 
-    ParticipantRecords.findById(id).then((contest) => {
-        const originalFile = contest.originalFile;
-        res.download(originalFile, (err) => {
-            if (err){
-                return res.send(err.stack);
+    const params = {
+        TableName: 'Records',
+        Key: {
+            'id': {S: id}
+        }
+    };
+
+    ddb.getItem(params, (err, data) => {
+        if (err) {
+            console.log("Error", err);
+            return res.send(err.stack);
+        } else {
+            const convertedFile = data.Item.originalFile;
+            if (convertedFile) {
+                res.download(convertedFile, (err) => {
+                    if (err) {
+                        return res.send(err.stack);
+                    }
+                });
+            } else {
+                return res.sendStatus(400);
             }
-        });
-    }).catch((err) => {
-        return res.send(err.stack);
+        }
     });
 };
 
 exports.convertedFileDownload = (req, res) => {
     const {params: {id}} = req;
 
-    ParticipantRecords.findById(id).then((contest) => {
-        const convertedFile = contest.convertedFile;
-        if (convertedFile){
-            res.download(convertedFile, (err) => {
-                if (err){
-                    return res.send(err.stack);
-                }
-            });
-        } else {
-            return res.sendStatus(400);
+    const params = {
+        TableName: 'Records',
+        Key: {
+            'id': {S: id}
         }
-    }).catch((err) => {
-        return res.send(err.stack);
+    };
+
+    ddb.getItem(params, (err, data) => {
+        if (err) {
+            console.log("Error", err);
+            return res.send(err.stack);
+        } else {
+            const convertedFile = data.Item.convertedFile;
+            if (convertedFile) {
+                res.download(convertedFile, (err) => {
+                    if (err) {
+                        return res.send(err.stack);
+                    }
+                });
+            } else {
+                return res.sendStatus(400);
+            }
+        }
     });
 };

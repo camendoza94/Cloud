@@ -26,7 +26,7 @@ class HomePage extends Component {
     getContests(page) {
         page = page || 1;
         contestService.getAll(page).then(response => {
-            this.setState({contests: response.data.contests.docs})
+            this.setState({contests: response.data.contests})
         });
     }
 

@@ -8,7 +8,7 @@ class ParticipantRecords extends Component {
             <div className="row">
                 <div className="col-md-12"><h3>Submissions</h3></div>
                 {participantRecords.map((participantRecord)=>{
-                    return <ParticipantRecord key={participantRecord.id}
+                    return <ParticipantRecord key={participantRecord.id.S}
                                               participantRecord={participantRecord}
                                               user={user}/>
                 })}

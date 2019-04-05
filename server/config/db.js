@@ -1,38 +1,33 @@
-const env = require('./env.js');
+const AWS = require('aws-sdk');
 
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize(env.database, env.username, env.password, {
-    host: env.host,
-    dialect: env.dialect,
-    operatorsAliases: false,
+const contest = require('../model/contest');
+const participantRecord = require('../model/participantRecord');
+const user = require('../model/user');
 
-    pool: {
-        max: env.max,
-        min: env.pool.min,
-        acquire: env.pool.acquire,
-        idle: env.pool.idle
-    }
-});
+AWS.config.update({region: 'us-east-1'});
 
-const db = {};
+const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10', endpoint: "http://localhost:8000"},);
 
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
-
-//Models/tables
-db.users = require('../model/user.js')(sequelize, Sequelize);
-db.contests = require('../model/contest.js')(sequelize, Sequelize);
-db.participantRecords = require('../model/participantRecord.js')(sequelize, Sequelize);
-
-// Associations
-// User - Contest
-db.users.hasMany(db.contests);
-db.contests.belongsTo(db.users);
-
-// Contest - ParticipantRecord
-db.contests.hasMany(db.participantRecords, {onDelete: 'CASCADE'});
-db.participantRecords.belongsTo(db.contests);
-db.contests.hasOne(db.participantRecords, {as: 'winner'});
-
-
-module.exports = db;
+exports.createTables = () => {
+    ddb.createTable(contest, (err, data) => {
+        if (err) {
+            console.log("Already created", err);
+        } else {
+            console.log("Table Created", data);
+        }
+    });
+    ddb.createTable(participantRecord, (err, data) => {
+        if (err) {
+            console.log("Already created", err);
+        } else {
+            console.log("Table Created", data);
+        }
+    });
+    ddb.createTable(user, (err, data) => {
+        if (err) {
+            console.log("Already created", err);
+        } else {
+            console.log("Table Created", data);
+        }
+    });
+};

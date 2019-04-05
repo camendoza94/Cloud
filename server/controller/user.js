@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 const {setPassword, generateJWT, toAuthJSON} = require('../config/passport');
 const {IMAGE_PATH} = require('../constants');
-const db = require('../config/db');
-const User = db.users;
-const Contest = db.contests;
 const passport = require('passport');
 const uuid = require('uuid/v4');
 const fs = require('fs');
+const AWS = require('aws-sdk');
+
+const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10', endpoint: "http://localhost:8000"},);
 
 
 exports.registerUser = (req, res) => {
@@ -29,17 +29,32 @@ exports.registerUser = (req, res) => {
     const finalUser = {email: user.email, hash: '', salt: ''};
 
     setPassword(finalUser, user.password);
-    return User.create({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        hash: finalUser.hash,
-        salt: finalUser.salt
-    }).then((newUser) => {
-        user.token = generateJWT(newUser);
-        res.json({user: toAuthJSON(newUser)});
-    }).catch(() => {
-        return res.status(400).send({error: "User already exists."});
+
+    const params = {
+        TableName: 'Users',
+        Item: {
+            'id': {S: uuid()},
+            'firstName': {S: user.firstName},
+            'lastName': {S: user.lastName},
+            'email': {S: user.email},
+            'pHash': {S: finalUser.hash},
+            'salt': {S: finalUser.salt},
+        },
+        ConditionExpression: "email <> :e",
+        ExpressionAttributeValues: {
+            ":e": {"S": user.email}
+        },
+    };
+
+    ddb.putItem(params, function (err) {
+        if (err) {
+            console.log("Error", err);
+            return res.status(400).send({error: "User already exists."});
+        } else {
+            console.log("Success", params.Item);
+            user.token = generateJWT(params.Item);
+            res.json({user: toAuthJSON(params.Item)});
+        }
     });
 };
 
@@ -77,20 +92,10 @@ exports.logIn = (req, res, next) => {
     })(req, res, next);
 };
 
-exports.current = (req, res) => {
-    const {payload: {id}} = req;
-
-    User.findByPk(id).then((user) => {
-        res.json({user: toAuthJSON(user)});
-    }).catch((err) => {
-        return res.send(err.stack);
-    });
-};
-
 exports.getContests = (req, res) => {
     const userId = req.params.id;
     const {payload: {id}} = req;
-    if (parseInt(userId) !== parseInt(id)) {
+    if (userId !== id) {
         return res.status(401).json({
             errors: {
                 name: 'unauthorized',
@@ -98,18 +103,35 @@ exports.getContests = (req, res) => {
         });
     }
 
-    const page = req.query.page || 1;
     const paginate = req.query.paginate || 50;
+    //TODO pagination
+    //const page = req.query.page || 1;
 
-    Contest.paginate({
-        where: {userId: id}, order: [['name', 'DESC']],
-        page: page, paginate: paginate
-    }).then((contests) => {
-        res.json({contests: contests});
-    }).catch((err) => {
-        return res.send(err.stack);
-    })
+    const params = {
+        TableName: "Contests",
+        IndexName: "UserIdIndex",
+        KeyConditionExpression: "#usr = :user",
+        ExpressionAttributeNames: {
+            "#usr": "userId"
+        },
+        ExpressionAttributeValues: {
+            ":user": {"S": id}
+        },
+        Limit: paginate
+    };
+
+    ddb.query(params, (err, data) => {
+        if (err) {
+            console.log("Error", err);
+            return res.send(err.stack);
+        } else {
+            console.log("Success", data.Items);
+            res.json({contests: data.Items});
+
+        }
+    });
 };
+
 
 exports.addContests = (req, res) => {
     const userId = req.params.id;
@@ -118,7 +140,7 @@ exports.addContests = (req, res) => {
     let uploadFile = req.files.file;
 
     const extension = uploadFile.name.split('.').pop();
-    const uniqueFileName = `${uuid.v4()}.${extension}`;
+    const uniqueFileName = `${uuid()}.${extension}`;
     const savePath = `${IMAGE_PATH}${uniqueFileName}`;
 
     uploadFile.mv(savePath,
@@ -142,7 +164,7 @@ exports.addContests = (req, res) => {
 
 
     const {payload: {id}} = req;
-    if (parseInt(userId) !== parseInt(id)) {
+    if (userId !== id) {
         return res.status(401).json({
             errors: {
                 name: 'unauthorized',
@@ -218,10 +240,35 @@ exports.addContests = (req, res) => {
         });
     }
     body.image = uniqueFileName;
-    Contest.create(body).then((contest) => {
-        res.json({contest: contest});
-    }).catch((err) => {
-        console.log(err);
-        return res.status(400).send({error: "Contest with given URL already exists."});
-    })
+
+    const params = {
+        TableName: 'Contests',
+        Item: {
+            'id': {S: uuid()},
+            'name': {S: body.name},
+            'image': {S: body.image},
+            'url': {S: body.url},
+            'startDate': {S: body.startDate},
+            'endDate': {S: body.endDate},
+            'payment': {N: body.payment},
+            'text': {S: body.text},
+            'recommendations': {S: body.recommendations},
+            'userId': {S: body.userId}
+        },
+        ConditionExpression: "url <> :url",
+        ExpressionAttributeValues: {
+            ":e": {"S": body.url}
+        },
+    };
+
+    ddb.putItem(params, function (err) {
+        if (err) {
+            console.log("Error", err);
+            return res.status(400).send({error: "Contest with given URL already exists."});
+        } else {
+            console.log("Success", params.Item);
+            res.json({contest: params.Item});
+
+        }
+    });
 };

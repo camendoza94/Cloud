@@ -7,11 +7,11 @@ class ParticipantRecord extends Component {
         return (<>{((!user && participantRecord.state === CONVERTED) || user) && <div className="col-sm-12">
                     <div className="card">
                         <div className="card-body text-center">
-                            <h5 className="card-title">{participantRecord.email}</h5>
+                            <h5 className="card-title">{participantRecord.email.S}</h5>
                             <ul className="list-group list-group-flush">
-                                <li className="list-group-item">{participantRecord.firstName}</li>
-                                <li className="list-group-item">{participantRecord.lastName}</li>
-                                <li className="list-group-item">{participantRecord.createdAt.substr(0, 10)}</li>
+                                <li className="list-group-item">{participantRecord.firstName.S}</li>
+                                <li className="list-group-item">{participantRecord.lastName.S}</li>
+                                <li className="list-group-item">{participantRecord.createdAt.S.substr(0, 10)}</li>
                                 {user && <li className="list-group-item">{participantRecord.state}</li>}
                             </ul>
                             <div className="btn btn-group">

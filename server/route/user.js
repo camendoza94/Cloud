@@ -10,9 +10,6 @@ module.exports = (app) => {
     // User login
     app.post('/login', auth.optional, User.logIn);
 
-    // Current user
-    app.get('/current', auth.required, User.current);
-
     // Contest of the user with id :id
     app.get('/users/:id/contests', auth.required, User.getContests);
 

@@ -1,39 +1,32 @@
-const sequelizePaginate = require('sequelize-paginate');
-
-module.exports = (sequelize, Sequelize) => {
-    const Contest = sequelize.define('contest', {
-        name: {
-            type: Sequelize.STRING,
-            allowNull: false
+const params = {
+    TableName: "Contests",
+    KeySchema: [
+        {AttributeName: "url", KeyType: "HASH"},
+    ],
+    AttributeDefinitions: [
+        {AttributeName: "url", AttributeType: "S"},
+        {AttributeName: "userId", AttributeType: "S"}
+    ],
+    ProvisionedThroughput: {
+        ReadCapacityUnits: 5,
+        WriteCapacityUnits: 5
+    },
+    GlobalSecondaryIndexes: [{
+        IndexName: "UserIdIndex",
+        KeySchema: [
+            {
+                AttributeName: "userId",
+                KeyType: "HASH"
+            }
+        ],
+        Projection: {
+            ProjectionType: "ALL"
         },
-        image: {
-            type: Sequelize.STRING
-        },
-        url: {
-            type: Sequelize.STRING,
-            allowNull: false,
-            unique: true
-        },
-        startDate: {
-            type: Sequelize.DATE,
-            allowNull: false
-        },
-        endDate: {
-            type: Sequelize.DATE,
-            allowNull: false
-        },
-        payment: {
-            type: Sequelize.DECIMAL
-        },
-        text: {
-            type: Sequelize.TEXT
-        },
-        recommendations: {
-            type: Sequelize.TEXT
+        ProvisionedThroughput: {
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5
         }
-    });
-
-    sequelizePaginate.paginate(Contest);
-
-    return Contest;
+    }]
 };
+
+module.exports = params;

@@ -21,7 +21,7 @@ class ContestDetail extends Component {
 
 
     componentDidMount() {
-        let contestId = this.props.location.state && this.props.location.state.contest.id;
+        let contestId = this.props.location.state && this.props.location.state.contest.id.S;
         if (!contestId) {
             const url = this.props.match.params.url;
             contestService.getByURL(url).then(response => {
@@ -41,7 +41,7 @@ class ContestDetail extends Component {
         page = page || 1;
         participantRecordService.getParticipantRecords(contestId, page).then(response => {
             this.setState({
-                participantRecords: response.data.participantRecords.docs,
+                participantRecords: response.data.participantRecords,
                 page: page,
                 totalPages: response.data.participantRecords.pages,
                 loading: false
@@ -51,7 +51,7 @@ class ContestDetail extends Component {
 
     deleteContest() {
         const contest = (this.props.location.state && this.props.location.state.contest) || this.state.contest;
-        contestService.deleteContest(contest.id).then(response => {
+        contestService.deleteContest(contest.url).then(() => {
             this.props.history.push('/');
         });
     }
@@ -66,19 +66,19 @@ class ContestDetail extends Component {
                     <div className="card col-md-12">
                         {contest ? <div>
                             <img className="card-img-top" style={{width: '500px'}}
-                                 src={`${process.env.REACT_APP_ROOT_URL}/images/${contest.image}`} alt={contest.name}/>
+                                 src={`${process.env.REACT_APP_ROOT_URL}/images/${contest.image.S}`} alt={contest.name.S}/>
                             <div className="card-body">
-                                <h5 className="card-title">{contest.name}</h5>
+                                <h5 className="card-title">{contest.name.S}</h5>
                             </div>
                             <ul className="list-group list-group-flush">
                                 <li className="list-group-item"><b>Fecha de
-                                    inicio:</b> {contest.startDate.substr(0, 10)}</li>
+                                    inicio:</b> {contest.startDate.S.substr(0, 10)}</li>
                                 <li className="list-group-item"><b>Fecha de
-                                    finalización:</b> {contest.endDate.substr(0, 10)}</li>
-                                <li className="list-group-item"><b>Texto:</b> {contest.text}</li>
-                                <li className="list-group-item"><b>Recomendaciones: </b> {contest.recommendations}</li>
-                                <li className="list-group-item"><b>Pago: </b>{contest.payment}</li>
-                                <li className="list-group-item"><b>URL de acceso:</b> <Link to={'/contests/' + contest.url}>{contest.url}</Link></li>
+                                    finalización:</b> {contest.endDate.S.substr(0, 10)}</li>
+                                <li className="list-group-item"><b>Texto:</b> {contest.text.S}</li>
+                                <li className="list-group-item"><b>Recomendaciones: </b> {contest.recommendations.S}</li>
+                                <li className="list-group-item"><b>Pago: </b>{contest.payment.N}</li>
+                                <li className="list-group-item"><b>URL de acceso:</b> <Link to={'/contests/' + contest.url.S}>{contest.url.S}</Link></li>
                             </ul>
                         </div> : ''}
                         {loading ?
@@ -87,13 +87,13 @@ class ContestDetail extends Component {
                             <ParticipantRecords user={user}
                                                 participantRecords={participantRecords}/>}
                         {!user && contest &&
-                        <Link className="btn btn-primary" to={`/contests/${contest.id}/addParticipantRecord`}>Add a
+                        <Link className="btn btn-primary" to={`/contests/${contest.id.S}/addParticipantRecord`}>Add a
                             record</Link>}
                         {user && contest &&
                         <div className="btn btn-group">
                             <Link className="btn btn-primary"
                                   to={{
-                                      pathname: `/contests/${contest.id}/edit`, state: {
+                                      pathname: `/contests/${contest.id.S}/edit`, state: {
                                           edit: true,
                                           name: contest.name,
                                           image: contest.image,

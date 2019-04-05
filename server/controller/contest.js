@@ -1,51 +1,54 @@
 /* eslint-disable no-console */
 const {IN_PROGRESS, UPLOAD_PATH, CONVERSION_FORMAT, CONVERTED, IMAGE_PATH} = require('../constants');
-const db = require('../config/db');
-const Contest = db.contests;
-const ParticipantRecords = db.participantRecords;
 const uuid = require('uuid/v4');
 const fs = require('fs');
 const {sendMessage} = require('../config/queue');
+const AWS = require('aws-sdk');
 
-exports.findAll = (req, res) => {
-    Contest.findAll().then((contests) => {
-        res.json({contests: contests});
-    }).catch((err) => {
-        return res.status(422).send(err.stack);
-    });
-};
-
-exports.findById = (req, res) => {
-    const {params: {id}} = req;
-    Contest.findById(id).then((contest) => {
-        res.json({contest: contest});
-    }).catch((err) => {
-        return res.status(422).send(err.stack);
-    });
-};
+const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10', endpoint: "http://localhost:8000"},);
 
 exports.findByURL = (req, res) => {
     const {params: {url}} = req;
-    Contest.findOne({where: {url: url}}).then((contest) => {
-        res.json({contest: contest});
-    }).catch((err) => {
-        return res.status(422).send(err.stack);
+    const params = {
+        TableName: 'Contests',
+        Key: {
+            'url': {S: url}
+        }
+    };
+
+    ddb.getItem(params, (err, data) => {
+        if (err) {
+            console.log("Error", err);
+            return res.status(422).send(err.stack);
+        } else {
+            if (data.Item) {
+                console.log("Success", data.Item);
+                res.json({contest: data.Item});
+            } else
+                return res.status(404).send("Not found");
+
+        }
     });
 };
 
 exports.delete = (req, res) => {
-    const contestId = req.params.id;
-    const userId = req.payload.id;
+    const url = req.params.id;
 
-    Contest.destroy({
-        where: {
-            id: contestId,
-            userId: userId
+    const params = {
+        TableName: 'Contests',
+        Key: {
+            'url': {S: url}
         }
-    }).then((contest) => {
-        res.json({contest: contest});
-    }).catch((err) => {
-        return res.status(422).send(err.stack);
+    };
+
+    ddb.delete(params, (err, data) => {
+        if (err) {
+            console.log("Error", err);
+            return res.status(422).send(err.stack);
+        } else {
+            console.log("Success", data.Item);
+            res.json({contest: data.Item});
+        }
     });
 };
 
@@ -54,7 +57,6 @@ exports.update = (req, res) => {
         body,
         params: {id}
     } = req;
-    const userId = req.payload.id;
     let uploadFile = req.files && req.files.file;
     if (uploadFile) {
         const extension = uploadFile.name.split('.').pop();
@@ -81,16 +83,31 @@ exports.update = (req, res) => {
         );
         body.image = uniqueFileName;
     }
-    Contest.update(body,
-        {
-            where: {
-                id: id,
-                userId: userId
-            }
-        }).then((contest) => {
-        res.json({contest: contest});
-    }).catch(() => {
-        return res.status(400).send({error: "Contest with given URL already exists."});
+    const params = {
+        TableName: 'Contests',
+        Item: {
+            'id': {S: id},
+            'name': {S: body.name},
+            'image': {S: body.image},
+            'url': {S: body.url},
+            'startDate': {S: body.startDate},
+            'endDate': {S: body.endDate},
+            'payment': {N: body.payment},
+            'text': {S: body.text},
+            'recommendations': {S: body.recommendations},
+            'userId': {S: body.userId}
+        }
+    };
+
+    ddb.putItem(params, function (err) {
+        if (err) {
+            console.log("Error", err);
+            return res.status(400).send({error: "Contest with given URL already exists."});
+        } else {
+            console.log("Success", params.Item);
+            res.json({contest: params.Item});
+
+        }
     });
 };
 
@@ -107,8 +124,8 @@ exports.addParticipantRecord = (req, res) => {
     }
 
     const fileAudio = req.files.originalFile;
-    const extention = fileAudio.name.split('.').pop();
-    const uniqueFileName = `${uuid.v4()}.${extention}`;
+    const extension = fileAudio.name.split('.').pop();
+    const uniqueFileName = `${uuid.v4()}.${extension}`;
 
     const savePath = `${UPLOAD_PATH}${uniqueFileName}`;
 
@@ -116,92 +133,103 @@ exports.addParticipantRecord = (req, res) => {
     participantRecord.originalFile = savePath;
     participantRecord.state = IN_PROGRESS;
 
-    if (extention === CONVERSION_FORMAT) {
+    if (extension === CONVERSION_FORMAT) {
         participantRecord.state = CONVERTED;
         participantRecord.convertedFile = savePath;
     }
 
-    Contest.findByPk(contestId).then((contest) => {
-        const endDate = new Date(contest.endDate);
-        if (endDate < new Date()) {
-            return res.status(422).json({
-                error: {
-                    contest: 'Contest already ended.'
-                }
-            });
+    const params = {
+        TableName: 'Contests',
+        Key: {
+            'url': {S: contestId}
         }
+    };
 
-        fileAudio.mv(savePath, (err) => {
-            if (err) {
-                console.log(err);
-                return res.status(422).send(err);
-            }
-            const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
-            stream.once('open', () => {
-                stream.write(fileAudio.data, writeErr => {
-                    if (writeErr) {
-                        return res.status(500).send(`Failed to write content ${savePath}.`);
+    ddb.getItem(params, (err, data) => {
+        if (err) {
+            console.log("Error", err);
+            return res.status(422).send(err.stack);
+        } else {
+            if (data.Item) {
+                const endDate = new Date(data.Item.endDate.S);
+                if (endDate < new Date()) {
+                    return res.status(422).json({
+                        error: {
+                            contest: 'Contest already ended.'
+                        }
+                    });
+                }
+                fileAudio.mv(savePath, (err) => {
+                    if (err) {
+                        console.log(err);
+                        return res.status(422).send(err);
                     }
-                    stream.close();
-                    console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
-                })
-            });
-            ParticipantRecords.create(participantRecord)
-                .then((participantRecord) => {
-                    if(participantRecord.state === IN_PROGRESS)
-                        sendMessage(participantRecord.id, `${process.env.REACT_APP_ROOT_URL}/${contest.url}`);
-                    return res.json({participantRecord: participantRecord});
-                }).catch((err) => {
-                    return res.status(422).send(err.stack);
+                    const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
+                    stream.once('open', () => {
+                        stream.write(fileAudio.data, writeErr => {
+                            if (writeErr) {
+                                return res.status(500).send(`Failed to write content ${savePath}.`);
+                            }
+                            stream.close();
+                            console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
+                        })
+                    });
+                    const params = {
+                        TableName: 'Records',
+                        Item: {
+                            'id': {S: uuid()},
+                            'contestId': {S: participantRecord.name},
+                            'originalFile': {S: participantRecord.originalFile},
+                            'state': {S: participantRecord.state},
+                            'convertedFile': {S: participantRecord.convertedFile},
+                            'firstName': {S: participantRecord.first},
+                            'lastName': {S: participantRecord.lastName},
+                            'email': {S: participantRecord.email},
+                            'observations': {S: participantRecord.observations},
+                            'createdAt': {S: participantRecord.createdAt}
+                        }
+                    };
+
+                    ddb.putItem(params, function (err) {
+                        if (err) {
+                            console.log("Error", err);
+                            return res.status(422).send(err.stack);
+                        } else {
+                            console.log("Success", params.Item);
+                            if (participantRecord.state === IN_PROGRESS)
+                                sendMessage(participantRecord.id, `${process.env.REACT_APP_ROOT_URL}/${data.Item.url.S}`);
+                            return res.json({participantRecord: params.Item});
+
+                        }
+                    });
                 });
-        });
-    }).catch((err) => {
-        return res.status(422).send(err.stack);
+            } else
+                return res.status(422).send(err.stack);
+        }
     });
 };
 
 exports.getParticipantRecords = (req, res) => {
     const contestId = req.params.id;
-    const page = req.query.page || 1;
     const paginate = req.query.paginate || req.payload ? 50 : 20;
-    const where = req.payload ? {contestId} : {contestId, state: "Convertida"};
-    ParticipantRecords.paginate({
-        where: where, order: [['createdAt', 'DESC']],
-        page: page, paginate: paginate
-    })
-        .then((participantRecords) => {
-            res.json({participantRecords: participantRecords});
-        }).catch((err) => {
-            res.send(err.stack);
-        });
+    const where = req.payload ? "contestId = :id" : "contestId = :id AND state =:cv";
+    const whereValues = req.payload ? {":id": {"S": contestId}} : {":id": {"S": contestId}, ":cv": {"S": "Convertida"}};
+    //TODO paginate
+    const params = {
+        TableName: "Contests",
+        IndexName: "ContestIdIndex",
+        KeyConditionExpression: where,
+        ExpressionAttributeValues: whereValues,
+        Limit: paginate
+    };
+
+    ddb.query(params, (err, data) => {
+        if (err) {
+            console.log("Error", err);
+            return res.send(err.stack);
+        } else {
+            console.log("Success", data.Items);
+            res.json({participantRecords: data.Items});
+        }
+    });
 };
-
-
-exports.setParticipantRecordWinner = (req, res) => {
-    //Use Contest.setWinner
-    const contestId = req.params.contestId;
-    const participantRecordId = req.params.participantRecordId;
-    const contest = Contest.build({id: contestId});
-
-    contest.setWinner(participantRecordId)
-        .then((participantRecord) => {
-            res.json({participantRecord: participantRecord});
-        }).catch((err) => {
-            res.send(err.stack);
-        });
-};
-
-exports.getParticipantRecordWinner = (req, res) => {
-    //Use Contest.getWinner
-    const contestId = req.params.contestId;
-    const participantRecordId = req.params.participantRecordId;
-    const contest = Contest.build({id: contestId});
-
-    contest.getWinner(participantRecordId)
-        .then((participantRecord) => {
-            res.json({participantRecord: participantRecord});
-        }).catch((err) => {
-            res.send(err.stack);
-        });
-};
-            
