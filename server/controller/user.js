@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const {setPassword, generateJWT, toAuthJSON} = require('../config/passport');
-const {IMAGE_PATH} = require('../constants');
+const {IMAGE_PATH, CLOUDFRONT} = require('../constants');
 const passport = require('passport');
 const uuid = require('uuid/v4');
 //const fs = require('fs');

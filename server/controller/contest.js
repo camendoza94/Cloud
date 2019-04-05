@@ -65,102 +65,16 @@ exports.update = (req, res) => {
         const savePath = `${IMAGE_PATH}${uniqueFileName}`;
         req.setTimeout(0);
         const upload = uploadFileS3(savePath, uploadFile.data).promise();
-
+        body.image = `${CLOUDFRONT}${savePath}`;
         upload.then((data) => {
             console.log("Success: ", data.Location);
-            body.image = `${CLOUDFRONT}${savePath}`;
-            let updtExpression = "set #n = :n, startDate = :s, endDate = :e, payment = :p, #t = :t, recommendations = :r";
-        let updtValues = {
-            ":n": {"S": body.name},
-            ":s": {"S": body.startDate},
-            ":e": {"S": body.endDate},
-            ":p": {"N": body.payment},
-            ":t": {"S": body.text},
-            ":r": {"S": body.recommendations},
-        };
-    
-        if (body.image) {
-            updtExpression = `${updtExpression}, image = :i`;
-            updtValues[":i"] = body.image;
-        }
-    
-        const params = {
-            TableName: 'Contests',
-            Key: {
-                "url": {"S": id}
-            },
-            UpdateExpression: updtExpression,
-            ExpressionAttributeValues: updtValues,
-            ReturnValues: "ALL_NEW",
-            ExpressionAttributeNames: {
-                "#n": "name",
-                "#t": "text"
-            },
-        };
-    
-        ddb.updateItem(params, (err, data) => {
-            if (err) {
-                console.log("Error", err);
-                return res.status(400).send({error: "Contest with given URL already exists."});
-            } else {
-                if (id !== body.url) {
-                    const params = {
-                        TableName: 'Contests',
-                        Key: {
-                            'url': {S: id}
-                        }
-                    };
-                    console.log("Deletion");
-    
-                    ddb.deleteItem(params, (err) => {
-                            if (err) {
-                                console.log("Error", err);
-                                return res.status(422).send(err);
-                            } else {
-                                console.log("Deleted", data);
-                                const params = {
-                                    TableName: "Contests",
-                                    Item: {
-                                        'id': {S: data.Attributes.id.S},
-                                        'name': {S: data.Attributes.name.S},
-                                        'image': {S: data.Attributes.image.S},
-                                        'url': {S: body.url},
-                                        'startDate': {S: data.Attributes.startDate.S},
-                                        'endDate': {S: data.Attributes.endDate.S},
-                                        'payment': {N: data.Attributes.payment.N},
-                                        'text': {S: data.Attributes.text.S},
-                                        'recommendations': {S: data.Attributes.recommendations.S},
-                                        'userId': {S: data.Attributes.userId.S}
-                                    }
-                                };
-    
-                                ddb.putItem(params, function (err) {
-                                    if (err) {
-                                        console.log("Error", err);
-                                        return res.status(400).send({error: "Contest with given URL already exists."});
-                                    } else {
-                                        console.log("Success", params.Item);
-                                        res.json({contest: params.Item});
-    
-                                    }
-                                });
-    
-                            }
-                        }
-                    );
-                } else {
-                    res.json({contest: params.Item});
-                }
-    
-            }
-        });
-        }).catch((err) => {
+            }).catch((err) => {
             if (err) {
                 console.log("Error: ", err);
-                return res.status(400).send(err);
+                return res.status(500).send(err);
             }
         });
-    }else{
+    }
         let updtExpression = "set #n = :n, startDate = :s, endDate = :e, payment = :p, #t = :t, recommendations = :r";
         let updtValues = {
             ":n": {"S": body.name},
@@ -246,7 +160,6 @@ exports.update = (req, res) => {
     
             }
         });
-    }
 };
 
 exports.addParticipantRecord = (req, res) => {
@@ -302,40 +215,40 @@ exports.addParticipantRecord = (req, res) => {
 
                 upload.then((data)=>{
                     console.log("Success: ", data.Location);
-                    const params = {
-                        TableName: 'Records',
-                        Item: {
-                            'id': {S: uuid()},
-                            'contestId': {S: participantRecord.contestId},
-                            'originalFile': {S: participantRecord.originalFile},
-                            'state': {S: participantRecord.state},
-                            'firstName': {S: participantRecord.firstName},
-                            'lastName': {S: participantRecord.lastName},
-                            'email': {S: participantRecord.email},
-                            'observations': {S: participantRecord.observations},
-                            'createdAt': {S: new Date().toISOString()}
-                        }
-                    };
-        
-                    if (extension === CONVERSION_FORMAT) {
-                        params.Item.convertedFile = {S: participantRecord.convertedFile};
-                    }
-                    ddb.putItem(params, function (err) {
-                        if (err) {
-                            console.log("Error", err);
-                            return res.status(422).send(err);
-                        } else {
-                            console.log("Success", params.Item);
-                            if (participantRecord.state === IN_PROGRESS)
-                            sendMessage(participantRecord.id, `${process.env.FRONT_ROOT_URL}/contests/${data.Item.url.S}`);
-                            return res.json({participantRecord: params.Item});
-        
-                        }
-                    });
                 }).catch((err)=>{
                     if (err) {
                         console.log("Error: ", err);
                         return res.status(422).send(err);
+                    }
+                });
+                const params = {
+                    TableName: 'Records',
+                    Item: {
+                        'id': {S: uuid()},
+                        'contestId': {S: participantRecord.contestId},
+                        'originalFile': {S: participantRecord.originalFile},
+                        'state': {S: participantRecord.state},
+                        'firstName': {S: participantRecord.firstName},
+                        'lastName': {S: participantRecord.lastName},
+                        'email': {S: participantRecord.email},
+                        'observations': {S: participantRecord.observations},
+                        'createdAt': {S: new Date().toISOString()}
+                    }
+                };
+    
+                if (extension === CONVERSION_FORMAT) {
+                    params.Item.convertedFile = {S: participantRecord.convertedFile};
+                }
+                ddb.putItem(params, function (err) {
+                    if (err) {
+                        console.log("Error", err);
+                        return res.status(422).send(err);
+                    } else {
+                        console.log("Success", params.Item);
+                        if (participantRecord.state === IN_PROGRESS)
+                        sendMessage(participantRecord.id, `${process.env.FRONT_ROOT_URL}/contests/${data.Item.url.S}`);
+                        return res.json({participantRecord: params.Item});
+    
                     }
                 });
 
