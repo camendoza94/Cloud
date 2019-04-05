@@ -17,7 +17,8 @@ exports.originalFileDownload = (req, res) => {
             console.log("Error", err);
             return res.send(err);
         } else {
-            const convertedFile = data.Item.originalFile;
+            console.log(data.Item);
+            const convertedFile = data.Item.originalFile.S;
             if (convertedFile) {
                 res.download(convertedFile, (err) => {
                     if (err) {
@@ -46,7 +47,7 @@ exports.convertedFileDownload = (req, res) => {
             console.log("Error", err);
             return res.send(err);
         } else {
-            const convertedFile = data.Item.convertedFile;
+            const convertedFile = data.Item.convertedFile.S;
             if (convertedFile) {
                 res.download(convertedFile, (err) => {
                     if (err) {

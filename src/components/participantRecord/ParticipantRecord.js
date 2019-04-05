@@ -12,14 +12,14 @@ class ParticipantRecord extends Component {
                                 <li className="list-group-item">{participantRecord.firstName.S}</li>
                                 <li className="list-group-item">{participantRecord.lastName.S}</li>
                                 <li className="list-group-item">{participantRecord.createdAt.S.substr(0, 10)}</li>
-                                {user && <li className="list-group-item">{participantRecord.state}</li>}
+                                {user && <li className="list-group-item">{participantRecord.state.S}</li>}
                             </ul>
                             <div className="btn btn-group">
                                 {user &&
-                                    <a href={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id}/originalFile/download`} 
+                                    <a href={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id.S}/originalFile/download`}
                                     className="btn btn-danger">Download Original audio file</a>}
                                 {user && participantRecord.state === CONVERTED && 
-                                    <a href={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id}/convertedFile/download`}
+                                    <a href={`${process.env.REACT_APP_ROOT_URL}/participantRecords/${participantRecord.id.s}/convertedFile/download`}
                                     className="btn btn-primary">Download Converted audio file</a>}
                             </div>
                             {participantRecord.state === CONVERTED &&

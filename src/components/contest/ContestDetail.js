@@ -21,14 +21,14 @@ class ContestDetail extends Component {
 
 
     componentDidMount() {
-        let contestId = this.props.location.state && this.props.location.state.contest.id.S;
+        let contestId = this.props.location.state && this.props.location.state.contest.url.S;
         if (!contestId) {
             const url = this.props.match.params.url;
             contestService.getByURL(url).then(response => {
                 if (!response.data.contest) {
                     this.setState({notFound: true})
                 }
-                contestId = response.data.contest.id;
+                contestId = response.data.contest.url.S;
                 this.setState({contest: response.data.contest}, this.getParticipantRecords(contestId, this.state.page))
             }).catch((err) => console.log(err))
         } else {
@@ -43,7 +43,6 @@ class ContestDetail extends Component {
             this.setState({
                 participantRecords: response.data.participantRecords,
                 page: page,
-                totalPages: response.data.participantRecords.pages,
                 loading: false
             });
         }).catch((err) => console.log(err));
@@ -51,7 +50,7 @@ class ContestDetail extends Component {
 
     deleteContest() {
         const contest = (this.props.location.state && this.props.location.state.contest) || this.state.contest;
-        contestService.deleteContest(contest.url).then(() => {
+        contestService.deleteContest(contest.url.S).then(() => {
             this.props.history.push('/');
         });
     }
@@ -93,7 +92,7 @@ class ContestDetail extends Component {
                         <div className="btn btn-group">
                             <Link className="btn btn-primary"
                                   to={{
-                                      pathname: `/contests/${contest.id.S}/edit`, state: {
+                                      pathname: `/contests/${contest.url.S}/edit`, state: {
                                           edit: true,
                                           name: contest.name,
                                           image: contest.image,
@@ -114,7 +113,7 @@ class ContestDetail extends Component {
                                 {page !== 1 &&
                                 <li className="page-item">
                                     <button className="page-link" onClick={() => {
-                                        this.getParticipantRecords(contest.id, page - 1)
+                                        this.getParticipantRecords(contest.url.S, page - 1)
                                     }}>
                                         &#x3C;
                                     </button>
@@ -122,7 +121,7 @@ class ContestDetail extends Component {
                                 {page < totalPages &&
                                 <li className="page-item">
                                     <button className="page-link" onClick={() => {
-                                        this.getParticipantRecords(contest.id, page + 1)
+                                        this.getParticipantRecords(contest.url.S, page + 1)
                                     }}>
                                         &#x3E;
                                     </button>
