@@ -165,7 +165,7 @@ exports.update = (req, res) => {
 exports.addParticipantRecord = (req, res) => {
     const participantRecord = req.body;
     const contestId = req.params.id;
-
+    req.setTimeout(0);
     if (Object.keys(req.files).length === 0) {
         return res.status(422).json({
             error: {
@@ -210,7 +210,7 @@ exports.addParticipantRecord = (req, res) => {
                         }
                     });
                 }
-                req.setTimeout(0);
+
                 const upload = uploadFileS3(savePath, fileAudio.data).promise();
 
                 upload.then((data)=>{
