@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10', endpoint: "http://localhost:8000"},);
+const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 exports.originalFileDownload = (req, res) => {
     const {params: {id}} = req;

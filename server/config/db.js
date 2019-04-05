@@ -6,7 +6,7 @@ const user = require('../model/user');
 
 AWS.config.update({region: 'us-east-1'});
 
-const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10', endpoint: "http://localhost:8000"},);
+const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 exports.createTables = () => {
     ddb.createTable(contest, (err, data) => {

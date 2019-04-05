@@ -9,7 +9,7 @@ passport.use(new LocalStrategy({
     passwordField: 'user[password]',
 }, (email, password, done) => {
 
-    const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10', endpoint: "http://localhost:8000"},);
+    const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
     const params = {
         TableName: 'Users',
