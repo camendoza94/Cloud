@@ -246,7 +246,7 @@ exports.addParticipantRecord = (req, res) => {
                     } else {
                         console.log("Success", params.Item);
                         if (params.Item.state.S === IN_PROGRESS)
-                        sendMessage(params.Item.id.S, `${process.env.FRONT_ROOT_URL}/contests/${params.Item.url.S}`);
+                        sendMessage(params.Item.id.S, `${process.env.FRONT_ROOT_URL}/contests/${data.Item.url.S}`);
                         return res.json({participantRecord: params.Item});
     
                     }
