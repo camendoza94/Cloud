@@ -15,13 +15,13 @@ exports.originalFileDownload = (req, res) => {
     ddb.getItem(params, (err, data) => {
         if (err) {
             console.log("Error", err);
-            return res.send(err.stack);
+            return res.send(err);
         } else {
             const convertedFile = data.Item.originalFile;
             if (convertedFile) {
                 res.download(convertedFile, (err) => {
                     if (err) {
-                        return res.send(err.stack);
+                        return res.send(err);
                     }
                 });
             } else {
@@ -44,13 +44,13 @@ exports.convertedFileDownload = (req, res) => {
     ddb.getItem(params, (err, data) => {
         if (err) {
             console.log("Error", err);
-            return res.send(err.stack);
+            return res.send(err);
         } else {
             const convertedFile = data.Item.convertedFile;
             if (convertedFile) {
                 res.download(convertedFile, (err) => {
                     if (err) {
-                        return res.send(err.stack);
+                        return res.send(err);
                     }
                 });
             } else {

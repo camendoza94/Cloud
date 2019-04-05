@@ -19,7 +19,7 @@ exports.findByURL = (req, res) => {
     ddb.getItem(params, (err, data) => {
         if (err) {
             console.log("Error", err);
-            return res.status(422).send(err.stack);
+            return res.status(422).send(err);
         } else {
             if (data.Item) {
                 console.log("Success", data.Item);
@@ -44,7 +44,7 @@ exports.delete = (req, res) => {
     ddb.delete(params, (err, data) => {
         if (err) {
             console.log("Error", err);
-            return res.status(422).send(err.stack);
+            return res.status(422).send(err);
         } else {
             console.log("Success", data.Item);
             res.json({contest: data.Item});
@@ -60,7 +60,7 @@ exports.update = (req, res) => {
     let uploadFile = req.files && req.files.file;
     if (uploadFile) {
         const extension = uploadFile.name.split('.').pop();
-        const uniqueFileName = `${uuid.v4()}.${extension}`;
+        const uniqueFileName = `${uuid()}.${extension}`;
         const savePath = `${IMAGE_PATH}${uniqueFileName}`;
 
         uploadFile.mv(savePath,
@@ -125,7 +125,7 @@ exports.addParticipantRecord = (req, res) => {
 
     const fileAudio = req.files.originalFile;
     const extension = fileAudio.name.split('.').pop();
-    const uniqueFileName = `${uuid.v4()}.${extension}`;
+    const uniqueFileName = `${uuid()}.${extension}`;
 
     const savePath = `${UPLOAD_PATH}${uniqueFileName}`;
 
@@ -148,7 +148,7 @@ exports.addParticipantRecord = (req, res) => {
     ddb.getItem(params, (err, data) => {
         if (err) {
             console.log("Error", err);
-            return res.status(422).send(err.stack);
+            return res.status(422).send(err);
         } else {
             if (data.Item) {
                 const endDate = new Date(data.Item.endDate.S);
@@ -193,7 +193,7 @@ exports.addParticipantRecord = (req, res) => {
                     ddb.putItem(params, function (err) {
                         if (err) {
                             console.log("Error", err);
-                            return res.status(422).send(err.stack);
+                            return res.status(422).send(err);
                         } else {
                             console.log("Success", params.Item);
                             if (participantRecord.state === IN_PROGRESS)
@@ -204,7 +204,8 @@ exports.addParticipantRecord = (req, res) => {
                     });
                 });
             } else
-                return res.status(422).send(err.stack);
+                console.log("Error", err);
+                return res.status(422).send(err);
         }
     });
 };
@@ -212,21 +213,24 @@ exports.addParticipantRecord = (req, res) => {
 exports.getParticipantRecords = (req, res) => {
     const contestId = req.params.id;
     const paginate = req.query.paginate || req.payload ? 50 : 20;
-    const where = req.payload ? "contestId = :id" : "contestId = :id AND state =:cv";
+    const where = req.payload ? "contestId = :id" : "contestId = :id AND #s =:cv";
     const whereValues = req.payload ? {":id": {"S": contestId}} : {":id": {"S": contestId}, ":cv": {"S": "Convertida"}};
     //TODO paginate
     const params = {
-        TableName: "Contests",
+        TableName: "Records",
         IndexName: "ContestIdIndex",
         KeyConditionExpression: where,
         ExpressionAttributeValues: whereValues,
         Limit: paginate
     };
+    
+    if(!req.payload)
+      params.ExpressionAttributeNames = {"#s" : "state"};
 
     ddb.query(params, (err, data) => {
         if (err) {
             console.log("Error", err);
-            return res.send(err.stack);
+            return res.send(err);
         } else {
             console.log("Success", data.Items);
             res.json({participantRecords: data.Items});

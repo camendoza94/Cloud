@@ -87,7 +87,7 @@ class ContestDetail extends Component {
                             <ParticipantRecords user={user}
                                                 participantRecords={participantRecords}/>}
                         {!user && contest &&
-                        <Link className="btn btn-primary" to={`/contests/${contest.id.S}/addParticipantRecord`}>Add a
+                        <Link className="btn btn-primary" to={`/contests/${contest.url.S}/addParticipantRecord`}>Add a
                             record</Link>}
                         {user && contest &&
                         <div className="btn btn-group">

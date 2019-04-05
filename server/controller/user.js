@@ -123,7 +123,7 @@ exports.getContests = (req, res) => {
     ddb.query(params, (err, data) => {
         if (err) {
             console.log("Error", err);
-            return res.send(err.stack);
+            return res.send(err);
         } else {
             console.log("Success", data.Items);
             res.json({contests: data.Items});
@@ -255,10 +255,13 @@ exports.addContests = (req, res) => {
             'recommendations': {S: body.recommendations},
             'userId': {S: body.userId}
         },
-        ConditionExpression: "url <> :url",
-        ExpressionAttributeValues: {
-            ":e": {"S": body.url}
+        ConditionExpression: "#u <> :uv",
+        ExpressionAttributeNames: {
+            "#u": "url"
         },
+        ExpressionAttributeValues: {
+            ":uv": {"S": body.url}
+        }
     };
 
     ddb.putItem(params, function (err) {
