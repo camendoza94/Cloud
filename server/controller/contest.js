@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 const {IN_PROGRESS, UPLOAD_PATH, CONVERSION_FORMAT, CONVERTED, IMAGE_PATH} = require('../constants');
 const uuid = require('uuid/v4');
-const fs = require('fs');
+//const fs = require('fs');
+const {uploadFileS3} = require('../config/files');
 const {sendMessage} = require('../config/queue');
 const AWS = require('aws-sdk');
 
@@ -63,25 +64,14 @@ exports.update = (req, res) => {
         const uniqueFileName = `${uuid()}.${extension}`;
         const savePath = `${IMAGE_PATH}${uniqueFileName}`;
 
-        uploadFile.mv(savePath,
-            function (err) {
-                if (err) {
-                    return res.status(500).send(err)
-                }
-                const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
-                stream.once('open', () => {
-                    stream.write(uploadFile.data, writeErr => {
-                        if (writeErr) {
-                            return res.status(500).send(`Failed to write content ${savePath}.`);
-                        }
-                        stream.close();
-                        console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
-                    })
-                });
-                console.log("Moved");
-            },
-        );
-        body.image = uniqueFileName;
+        uploadFileS3(savePath, uploadFile.data, (err, data) => {
+            if (err) {
+                console.log("Error: ", err);
+                return res.status(500).send(err);
+            }
+            console.log("Success: ", data.Location);
+        });
+        body.image = `${CLOUDFRONT}${savePath}`;
     }
     let updtExpression = "set #n = :n, startDate = :s, endDate = :e, payment = :p, #t = :t, recommendations = :r";
     let updtValues = {
@@ -189,12 +179,12 @@ exports.addParticipantRecord = (req, res) => {
     const savePath = `${UPLOAD_PATH}${uniqueFileName}`;
 
     participantRecord.contestId = contestId;
-    participantRecord.originalFile = savePath;
+    participantRecord.originalFile = `${CLOUDFRONT}${savePath}`;
     participantRecord.state = IN_PROGRESS;
 
     if (extension === CONVERSION_FORMAT) {
         participantRecord.state = CONVERTED;
-        participantRecord.convertedFile = savePath;
+        participantRecord.convertedFile = `${CLOUDFRONT}${savePath}`;
     }
 
     const params = {
@@ -218,21 +208,12 @@ exports.addParticipantRecord = (req, res) => {
                         }
                     });
                 }
-                fileAudio.mv(savePath, (err) => {
+                uploadFileS3(savePath, fileAudio.data, (err, data) => {
                     if (err) {
-                        console.log(err);
+                        console.log("Error: ", err);
                         return res.status(422).send(err);
                     }
-                    const stream = fs.createWriteStream(savePath, {encoding: 'utf8'});
-                    stream.once('open', () => {
-                        stream.write(fileAudio.data, writeErr => {
-                            if (writeErr) {
-                                return res.status(500).send(`Failed to write content ${savePath}.`);
-                            }
-                            stream.close();
-                            console.log(`File ${fs.existsSync(savePath) ? 'exists' : 'does NOT exist'} under ${savePath}.`);
-                        })
-                    });
+                    console.log("Success: ", data.Location);
                     const params = {
                         TableName: 'Records',
                         Item: {
@@ -247,11 +228,10 @@ exports.addParticipantRecord = (req, res) => {
                             'createdAt': {S: new Date().toISOString()}
                         }
                     };
-
+        
                     if (extension === CONVERSION_FORMAT) {
                         params.Item.convertedFile = {S: participantRecord.convertedFile};
                     }
-
                     ddb.putItem(params, function (err) {
                         if (err) {
                             console.log("Error", err);
@@ -259,9 +239,9 @@ exports.addParticipantRecord = (req, res) => {
                         } else {
                             console.log("Success", params.Item);
                             if (participantRecord.state === IN_PROGRESS)
-                                sendMessage(participantRecord.id, `${process.env.REACT_APP_ROOT_URL}/${data.Item.url.S}`);
+                            sendMessage(participantRecord.id, `${process.env.FRONT_ROOT_URL}/contests/${data.Item.url.S}`);
                             return res.json({participantRecord: params.Item});
-
+        
                         }
                     });
                 });

@@ -14,8 +14,6 @@ app.use(Cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(fileUpload());
-app.use('/audio', express.static(path.join('/Data/Github/Grupo01/', '/audio')));
-app.use('/images', express.static(path.join('/Data/Github/Grupo01/', '/images')));
 
 
 const db = require('./config/db.js');

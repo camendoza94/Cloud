@@ -5,7 +5,7 @@ class Contest extends Component {
     render() {
         return (
             <div className="card">
-                <img style={{width: '300px'}} src={`${process.env.REACT_APP_ROOT_URL}/images/${this.props.contest.image.S}`} className="card-img-top"
+                <img style={{width: '300px'}} src={this.props.contest.image.S} className="card-img-top"
                      alt={'Contest: ' + this.props.contest.name.S}/>
                 <div className="card-body">
                     <h5 className="card-title">{this.props.contest.name.S}</h5>

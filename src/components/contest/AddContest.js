@@ -95,7 +95,7 @@ class AddContest extends Component {
                     </div>
                     {((this.props.location.state && this.props.location.state.image) || imageSrc) &&
                     <img
-                        src={(this.imageFile && imageSrc) || `${process.env.REACT_APP_ROOT_URL}/images/${this.props.location.state.image.S}`}
+                        src={(this.imageFile && imageSrc) || this.props.location.state.image.S}
                         alt={`Event: ${name}`} className="img-thumbnail"/>}
                     <div className="form-group">
                         <label htmlFor="image">Image</label>
