@@ -64,100 +64,189 @@ exports.update = (req, res) => {
         const uniqueFileName = `${uuid()}.${extension}`;
         const savePath = `${IMAGE_PATH}${uniqueFileName}`;
 
-        uploadFileS3(savePath, uploadFile.data, (err, data) => {
+        const upload = uploadFileS3(savePath, uploadFile.data).promise();
+
+        upload.then((data) => {
+            console.log("Success: ", data.Location);
+            body.image = `${CLOUDFRONT}${savePath}`;
+            let updtExpression = "set #n = :n, startDate = :s, endDate = :e, payment = :p, #t = :t, recommendations = :r";
+        let updtValues = {
+            ":n": {"S": body.name},
+            ":s": {"S": body.startDate},
+            ":e": {"S": body.endDate},
+            ":p": {"N": body.payment},
+            ":t": {"S": body.text},
+            ":r": {"S": body.recommendations},
+        };
+    
+        if (body.image) {
+            updtExpression = `${updtExpression}, image = :i`;
+            updtValues[":i"] = body.image;
+        }
+    
+        const params = {
+            TableName: 'Contests',
+            Key: {
+                "url": {"S": id}
+            },
+            UpdateExpression: updtExpression,
+            ExpressionAttributeValues: updtValues,
+            ReturnValues: "ALL_NEW",
+            ExpressionAttributeNames: {
+                "#n": "name",
+                "#t": "text"
+            },
+        };
+    
+        ddb.updateItem(params, (err, data) => {
+            if (err) {
+                console.log("Error", err);
+                return res.status(400).send({error: "Contest with given URL already exists."});
+            } else {
+                if (id !== body.url) {
+                    const params = {
+                        TableName: 'Contests',
+                        Key: {
+                            'url': {S: id}
+                        }
+                    };
+                    console.log("Deletion");
+    
+                    ddb.deleteItem(params, (err) => {
+                            if (err) {
+                                console.log("Error", err);
+                                return res.status(422).send(err);
+                            } else {
+                                console.log("Deleted", data);
+                                const params = {
+                                    TableName: "Contests",
+                                    Item: {
+                                        'id': {S: data.Attributes.id.S},
+                                        'name': {S: data.Attributes.name.S},
+                                        'image': {S: data.Attributes.image.S},
+                                        'url': {S: body.url},
+                                        'startDate': {S: data.Attributes.startDate.S},
+                                        'endDate': {S: data.Attributes.endDate.S},
+                                        'payment': {N: data.Attributes.payment.N},
+                                        'text': {S: data.Attributes.text.S},
+                                        'recommendations': {S: data.Attributes.recommendations.S},
+                                        'userId': {S: data.Attributes.userId.S}
+                                    }
+                                };
+    
+                                ddb.putItem(params, function (err) {
+                                    if (err) {
+                                        console.log("Error", err);
+                                        return res.status(400).send({error: "Contest with given URL already exists."});
+                                    } else {
+                                        console.log("Success", params.Item);
+                                        res.json({contest: params.Item});
+    
+                                    }
+                                });
+    
+                            }
+                        }
+                    );
+                } else {
+                    res.json({contest: params.Item});
+                }
+    
+            }
+        });
+        }).catch((err) => {
             if (err) {
                 console.log("Error: ", err);
                 return res.status(500).send(err);
             }
-            console.log("Success: ", data.Location);
         });
-        body.image = `${CLOUDFRONT}${savePath}`;
-    }
-    let updtExpression = "set #n = :n, startDate = :s, endDate = :e, payment = :p, #t = :t, recommendations = :r";
-    let updtValues = {
-        ":n": {"S": body.name},
-        ":s": {"S": body.startDate},
-        ":e": {"S": body.endDate},
-        ":p": {"N": body.payment},
-        ":t": {"S": body.text},
-        ":r": {"S": body.recommendations},
-    };
-
-    if (body.image) {
-        updtExpression = `${updtExpression}, image = :i`;
-        updtValues[":i"] = body.image;
-    }
-
-    const params = {
-        TableName: 'Contests',
-        Key: {
-            "url": {"S": id}
-        },
-        UpdateExpression: updtExpression,
-        ExpressionAttributeValues: updtValues,
-        ReturnValues: "ALL_NEW",
-        ExpressionAttributeNames: {
-            "#n": "name",
-            "#t": "text"
-        },
-    };
-
-    ddb.updateItem(params, (err, data) => {
-        if (err) {
-            console.log("Error", err);
-            return res.status(400).send({error: "Contest with given URL already exists."});
-        } else {
-            if (id !== body.url) {
-                const params = {
-                    TableName: 'Contests',
-                    Key: {
-                        'url': {S: id}
-                    }
-                };
-                console.log("Deletion");
-
-                ddb.deleteItem(params, (err) => {
-                        if (err) {
-                            console.log("Error", err);
-                            return res.status(422).send(err);
-                        } else {
-                            console.log("Deleted", data);
-                            const params = {
-                                TableName: "Contests",
-                                Item: {
-                                    'id': {S: data.Attributes.id.S},
-                                    'name': {S: data.Attributes.name.S},
-                                    'image': {S: data.Attributes.image.S},
-                                    'url': {S: body.url},
-                                    'startDate': {S: data.Attributes.startDate.S},
-                                    'endDate': {S: data.Attributes.endDate.S},
-                                    'payment': {N: data.Attributes.payment.N},
-                                    'text': {S: data.Attributes.text.S},
-                                    'recommendations': {S: data.Attributes.recommendations.S},
-                                    'userId': {S: data.Attributes.userId.S}
-                                }
-                            };
-
-                            ddb.putItem(params, function (err) {
-                                if (err) {
-                                    console.log("Error", err);
-                                    return res.status(400).send({error: "Contest with given URL already exists."});
-                                } else {
-                                    console.log("Success", params.Item);
-                                    res.json({contest: params.Item});
-
-                                }
-                            });
-
-                        }
-                    }
-                );
-            } else {
-                res.json({contest: params.Item});
-            }
-
+    }else{
+        let updtExpression = "set #n = :n, startDate = :s, endDate = :e, payment = :p, #t = :t, recommendations = :r";
+        let updtValues = {
+            ":n": {"S": body.name},
+            ":s": {"S": body.startDate},
+            ":e": {"S": body.endDate},
+            ":p": {"N": body.payment},
+            ":t": {"S": body.text},
+            ":r": {"S": body.recommendations},
+        };
+    
+        if (body.image) {
+            updtExpression = `${updtExpression}, image = :i`;
+            updtValues[":i"] = body.image;
         }
-    });
+    
+        const params = {
+            TableName: 'Contests',
+            Key: {
+                "url": {"S": id}
+            },
+            UpdateExpression: updtExpression,
+            ExpressionAttributeValues: updtValues,
+            ReturnValues: "ALL_NEW",
+            ExpressionAttributeNames: {
+                "#n": "name",
+                "#t": "text"
+            },
+        };
+    
+        ddb.updateItem(params, (err, data) => {
+            if (err) {
+                console.log("Error", err);
+                return res.status(400).send({error: "Contest with given URL already exists."});
+            } else {
+                if (id !== body.url) {
+                    const params = {
+                        TableName: 'Contests',
+                        Key: {
+                            'url': {S: id}
+                        }
+                    };
+                    console.log("Deletion");
+    
+                    ddb.deleteItem(params, (err) => {
+                            if (err) {
+                                console.log("Error", err);
+                                return res.status(422).send(err);
+                            } else {
+                                console.log("Deleted", data);
+                                const params = {
+                                    TableName: "Contests",
+                                    Item: {
+                                        'id': {S: data.Attributes.id.S},
+                                        'name': {S: data.Attributes.name.S},
+                                        'image': {S: data.Attributes.image.S},
+                                        'url': {S: body.url},
+                                        'startDate': {S: data.Attributes.startDate.S},
+                                        'endDate': {S: data.Attributes.endDate.S},
+                                        'payment': {N: data.Attributes.payment.N},
+                                        'text': {S: data.Attributes.text.S},
+                                        'recommendations': {S: data.Attributes.recommendations.S},
+                                        'userId': {S: data.Attributes.userId.S}
+                                    }
+                                };
+    
+                                ddb.putItem(params, function (err) {
+                                    if (err) {
+                                        console.log("Error", err);
+                                        return res.status(400).send({error: "Contest with given URL already exists."});
+                                    } else {
+                                        console.log("Success", params.Item);
+                                        res.json({contest: params.Item});
+    
+                                    }
+                                });
+    
+                            }
+                        }
+                    );
+                } else {
+                    res.json({contest: params.Item});
+                }
+    
+            }
+        });
+    }
 };
 
 exports.addParticipantRecord = (req, res) => {
@@ -208,11 +297,9 @@ exports.addParticipantRecord = (req, res) => {
                         }
                     });
                 }
-                uploadFileS3(savePath, fileAudio.data, (err, data) => {
-                    if (err) {
-                        console.log("Error: ", err);
-                        return res.status(422).send(err);
-                    }
+                const upload = uploadFileS3(savePath, fileAudio.data).promise();
+
+                upload.then((data)=>{
                     console.log("Success: ", data.Location);
                     const params = {
                         TableName: 'Records',
@@ -244,7 +331,13 @@ exports.addParticipantRecord = (req, res) => {
         
                         }
                     });
+                }).catch((err)=>{
+                    if (err) {
+                        console.log("Error: ", err);
+                        return res.status(422).send(err);
+                    }
                 });
+
             } else {
                 console.log("Error", err);
                 return res.status(422).send(err);
