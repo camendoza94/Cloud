@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const {IN_PROGRESS, UPLOAD_PATH, CONVERSION_FORMAT, CONVERTED, IMAGE_PATH} = require('../constants');
+const {IN_PROGRESS, UPLOAD_PATH, CONVERSION_FORMAT, CONVERTED, IMAGE_PATH, CLOUDFRONT} = require('../constants');
 const uuid = require('uuid/v4');
 //const fs = require('fs');
 const {uploadFileS3} = require('../config/files');
