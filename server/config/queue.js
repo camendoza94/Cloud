@@ -1,3 +1,4 @@
+const {QUEUE_URL} = require('../constants');
 const AWS = require('aws-sdk');
 // Set the region
 AWS.config.update({region: 'us-east-1'});
@@ -18,7 +19,7 @@ exports.sendMessage = (id, url) => {
             }
         },
         MessageBody: `Participant record with id ${id} needs conversion. Contest URL: ${url}`,
-        QueueUrl: "https://sqs.us-east-1.amazonaws.com/356893040219/ModeloC"
+        QueueUrl: QUEUE_URL
     };
 
     sqs.sendMessage(params, (err, data) => {

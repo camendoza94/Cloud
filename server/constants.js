@@ -10,3 +10,4 @@ exports.CONVERSION_FORMAT = 'mp3';
 exports.IMAGE_PATH = 'images/';
 
 exports.CLOUDFRONT = 'https://d16bb7ma8j5w3u.cloudfront.net/';
+exports.QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/356893040219/ModeloD';
