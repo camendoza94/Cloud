@@ -39,7 +39,8 @@ exports.delete = (req, res) => {
         TableName: 'Contests',
         Key: {
             'url': {S: url}
-        }
+        },
+        ReturnValues: "ALL_OLD"
     };
 
     ddb.deleteItem(params, (err, data) => {
@@ -48,7 +49,38 @@ exports.delete = (req, res) => {
             return res.status(422).send(err);
         } else {
             console.log("Success", data);
-            res.json({contest: data});
+            const params = {
+                TableName: "Records",
+                IndexName: "ContestIdIndex",
+                KeyConditionExpression: "contestId = :id",
+                ExpressionAttributeValues: {":id": data.Attributes.id},
+            };
+
+            ddb.query(params, (err, data) => {
+                if (err) {
+                    console.log("Error", err);
+                    return res.send(err);
+                } else {
+                    data.Items.forEach(item => {
+                        let params = {
+                            TableName: 'Records',
+                            Key: {
+                                'id': item.id
+                            }
+                        };
+
+                        ddb.deleteItem(params, (err, data) => {
+                            if (err) {
+                                console.log("Error deleting record", err);
+                                return res.status(422).send(err);
+                            } else {
+                                console.log("Success deleting record", data);
+                            }
+                        });
+                    })
+                }
+            });
+            return res.json({contest: data.Attributes});
         }
     });
 };
@@ -68,98 +100,98 @@ exports.update = (req, res) => {
         body.image = `${CLOUDFRONT}${savePath}`;
         upload.then((data) => {
             console.log("Success: ", data.Location);
-            }).catch((err) => {
+        }).catch((err) => {
             if (err) {
                 console.log("Error: ", err);
                 return res.status(500).send(err);
             }
         });
     }
-        let updtExpression = "set #n = :n, startDate = :s, endDate = :e, payment = :p, #t = :t, recommendations = :r";
-        let updtValues = {
-            ":n": {"S": body.name},
-            ":s": {"S": body.startDate},
-            ":e": {"S": body.endDate},
-            ":p": {"N": body.payment},
-            ":t": {"S": body.text},
-            ":r": {"S": body.recommendations},
-        };
-    
-        if (body.image) {
-            updtExpression = `${updtExpression}, image = :i`;
-            updtValues[":i"] = body.image;
-        }
-    
-        const params = {
-            TableName: 'Contests',
-            Key: {
-                "url": {"S": id}
-            },
-            UpdateExpression: updtExpression,
-            ExpressionAttributeValues: updtValues,
-            ReturnValues: "ALL_NEW",
-            ExpressionAttributeNames: {
-                "#n": "name",
-                "#t": "text"
-            },
-        };
-    
-        ddb.updateItem(params, (err, data) => {
-            if (err) {
-                console.log("Error", err);
-                return res.status(400).send({error: "Contest with given URL already exists."});
+    let updtExpression = "set #n = :n, startDate = :s, endDate = :e, payment = :p, #t = :t, recommendations = :r";
+    let updtValues = {
+        ":n": {"S": body.name},
+        ":s": {"S": body.startDate},
+        ":e": {"S": body.endDate},
+        ":p": {"N": body.payment},
+        ":t": {"S": body.text},
+        ":r": {"S": body.recommendations},
+    };
+
+    if (body.image) {
+        updtExpression = `${updtExpression}, image = :i`;
+        updtValues[":i"] = body.image;
+    }
+
+    const params = {
+        TableName: 'Contests',
+        Key: {
+            "url": {"S": id}
+        },
+        UpdateExpression: updtExpression,
+        ExpressionAttributeValues: updtValues,
+        ReturnValues: "ALL_NEW",
+        ExpressionAttributeNames: {
+            "#n": "name",
+            "#t": "text"
+        },
+    };
+
+    ddb.updateItem(params, (err, data) => {
+        if (err) {
+            console.log("Error", err);
+            return res.status(400).send({error: "Contest with given URL already exists."});
+        } else {
+            if (id !== body.url) {
+                const params = {
+                    TableName: 'Contests',
+                    Key: {
+                        'url': {S: id}
+                    }
+                };
+                console.log("Deletion");
+
+                ddb.deleteItem(params, err => {
+                        if (err) {
+                            console.log("Error", err);
+                            return res.status(422).send(err);
+                        } else {
+                            console.log("Deleted", data);
+                            const params = {
+                                TableName: "Contests",
+                                Item: {
+                                    'id': {S: data.Attributes.id.S},
+                                    'name': {S: data.Attributes.name.S},
+                                    'image': {S: data.Attributes.image.S},
+                                    'url': {S: body.url},
+                                    'startDate': {S: data.Attributes.startDate.S},
+                                    'endDate': {S: data.Attributes.endDate.S},
+                                    'payment': {N: data.Attributes.payment.N},
+                                    'text': {S: data.Attributes.text.S},
+                                    'recommendations': {S: data.Attributes.recommendations.S},
+                                    'userId': {S: data.Attributes.userId.S}
+                                }
+                            };
+
+                            ddb.putItem(params, function (err) {
+                                if (err) {
+                                    console.log("Error", err);
+                                    return res.status(400).send({error: "Contest with given URL already exists."});
+                                } else {
+                                    console.log("Success", params.Item);
+                                    res.json({contest: params.Item});
+
+                                }
+                            });
+
+                        }
+                    }
+                );
             } else {
-                if (id !== body.url) {
-                    const params = {
-                        TableName: 'Contests',
-                        Key: {
-                            'url': {S: id}
-                        }
-                    };
-                    console.log("Deletion");
-    
-                    ddb.deleteItem(params, (err) => {
-                            if (err) {
-                                console.log("Error", err);
-                                return res.status(422).send(err);
-                            } else {
-                                console.log("Deleted", data);
-                                const params = {
-                                    TableName: "Contests",
-                                    Item: {
-                                        'id': {S: data.Attributes.id.S},
-                                        'name': {S: data.Attributes.name.S},
-                                        'image': {S: data.Attributes.image.S},
-                                        'url': {S: body.url},
-                                        'startDate': {S: data.Attributes.startDate.S},
-                                        'endDate': {S: data.Attributes.endDate.S},
-                                        'payment': {N: data.Attributes.payment.N},
-                                        'text': {S: data.Attributes.text.S},
-                                        'recommendations': {S: data.Attributes.recommendations.S},
-                                        'userId': {S: data.Attributes.userId.S}
-                                    }
-                                };
-    
-                                ddb.putItem(params, function (err) {
-                                    if (err) {
-                                        console.log("Error", err);
-                                        return res.status(400).send({error: "Contest with given URL already exists."});
-                                    } else {
-                                        console.log("Success", params.Item);
-                                        res.json({contest: params.Item});
-    
-                                    }
-                                });
-    
-                            }
-                        }
-                    );
-                } else {
-                    res.json({contest: params.Item});
-                }
-    
+                res.json({contest: params.Item});
             }
-        });
+
+        }
+    });
 };
 
 exports.addParticipantRecord = (req, res) => {
@@ -213,9 +245,9 @@ exports.addParticipantRecord = (req, res) => {
 
                 const upload = uploadFileS3(savePath, fileAudio.data).promise();
 
-                upload.then((data)=>{
+                upload.then((data) => {
                     console.log("Success: ", data.Location);
-                }).catch((err)=>{
+                }).catch((err) => {
                     if (err) {
                         console.log("Error: ", err);
                         return res.status(422).send(err);
@@ -235,7 +267,7 @@ exports.addParticipantRecord = (req, res) => {
                         'createdAt': {S: new Date().toISOString()}
                     }
                 };
-    
+
                 if (extension === CONVERSION_FORMAT) {
                     params.Item.convertedFile = {S: participantRecord.convertedFile};
                 }
@@ -244,11 +276,10 @@ exports.addParticipantRecord = (req, res) => {
                         console.log("Error", err);
                         return res.status(422).send(err);
                     } else {
-                        console.log("Success", params.Item);
                         if (params.Item.state.S === IN_PROGRESS)
-                        sendMessage(params.Item.id.S, `${process.env.FRONT_ROOT_URL}/contests/${data.Item.url.S}`);
+                            sendMessage(params.Item.id.S, `${process.env.FRONT_ROOT_URL}/contests/${data.Item.url.S}`);
                         return res.json({participantRecord: params.Item});
-    
+
                     }
                 });
 
@@ -273,8 +304,6 @@ exports.getParticipantRecords = (req, res) => {
         ExpressionAttributeValues: whereValues,
         Limit: paginate
     };
-
-    console.log(params);
 
     if (!req.payload)
         params.ExpressionAttributeNames = {"#s": "state"};

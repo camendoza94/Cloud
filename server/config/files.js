@@ -11,9 +11,9 @@ exports.uploadFileS3 = (key, fileData) => {
         Bucket: BUCKET,
         Key: key, // file will be saved as BUCKET/<key>
         Body: fileData,
-        ACL:'public-read',
+        ACL: 'public-read',
         ContentDisposition: 'attachment'
-     };
+    };
     console.log(params);
     return s3.upload(params);
 
