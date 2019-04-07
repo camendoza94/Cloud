@@ -235,7 +235,6 @@ exports.addContests = (req, res) => {
     const params = {
         TableName: 'Contests',
         Item: {
-            'id': {S: uuid()},
             'name': {S: body.name},
             'image': {S: body.image},
             'url': {S: body.url},

@@ -24,7 +24,6 @@ db.createTables();
 require('./route/base.js')(app);
 require('./route/user.js')(app);
 require('./route/contest.js')(app);
-require('./route/participantRecord.js')(app);
 
 let listener = app.listen(process.env.PORT || 8081, function () {
     console.log('App running on http://localhost:' + listener.address().port);

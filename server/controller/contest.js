@@ -53,7 +53,7 @@ exports.delete = (req, res) => {
                 TableName: "Records",
                 IndexName: "ContestIdIndex",
                 KeyConditionExpression: "contestId = :id",
-                ExpressionAttributeValues: {":id": data.Attributes.id},
+                ExpressionAttributeValues: {":id": data.Attributes.url},
             };
 
             ddb.query(params, (err, data) => {
@@ -159,7 +159,6 @@ exports.update = (req, res) => {
                             const params = {
                                 TableName: "Contests",
                                 Item: {
-                                    'id': {S: data.Attributes.id.S},
                                     'name': {S: data.Attributes.name.S},
                                     'image': {S: data.Attributes.image.S},
                                     'url': {S: body.url},
