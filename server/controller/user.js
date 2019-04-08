@@ -105,8 +105,7 @@ exports.getContests = (req, res) => {
     }
 
     const paginate = req.query.paginate || 50;
-    //TODO pagination
-    //const page = req.query.page || 1;
+    const forward = req.query.forward || true;
 
     const params = {
         TableName: "Contests",
@@ -118,8 +117,12 @@ exports.getContests = (req, res) => {
         ExpressionAttributeValues: {
             ":user": {"S": id}
         },
-        Limit: paginate
+        Limit: paginate,
+        ScanIndexForward: !!forward
     };
+
+    if (req.body.lek)
+        params.ExclusiveStartKey = req.body.lek;
 
     ddb.query(params, (err, data) => {
         if (err) {
@@ -127,8 +130,7 @@ exports.getContests = (req, res) => {
             return res.send(err);
         } else {
             console.log("Success", data.Items);
-            res.json({contests: data.Items});
-
+            res.json({contests: data.Items, lek: data.LastEvaluatedKey});
         }
     });
 };
@@ -149,7 +151,7 @@ exports.addContests = (req, res) => {
 
     upload.then((data) => {
         console.log("Success: ", data.Location);
-    }).catch((err)=>{
+    }).catch((err) => {
         if (err) {
             return res.status(500).send(err)
         }

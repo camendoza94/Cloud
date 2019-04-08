@@ -292,20 +292,23 @@ exports.addParticipantRecord = (req, res) => {
 
 exports.getParticipantRecords = (req, res) => {
     const contestId = req.params.id;
-    const paginate = req.query.paginate || req.payload ? 50 : 20;
+    const paginate = req.query.paginate || 50;
+    const forward = req.query.forward || true;
     const where = req.payload ? "contestId = :id" : "contestId = :id AND #s =:cv";
     const whereValues = req.payload ? {":id": {"S": contestId}} : {":id": {"S": contestId}, ":cv": {"S": "Convertida"}};
-    //TODO paginate
     const params = {
         TableName: "Records",
         IndexName: "ContestIdIndex",
         KeyConditionExpression: where,
         ExpressionAttributeValues: whereValues,
-        Limit: paginate
+        Limit: paginate,
+        ScanIndexForward: !!forward
     };
 
     if (!req.payload)
         params.ExpressionAttributeNames = {"#s": "state"};
+    if (req.body.lek)
+        params.ExclusiveStartKey = req.body.lek;
 
     ddb.query(params, (err, data) => {
         if (err) {

@@ -6,12 +6,15 @@ export const participantRecordService = {
     getParticipantRecords
 };
 
-function getParticipantRecords(contestId, page) {
-    page = page || 1;
+function getParticipantRecords(contestId, lek, forward) {
+    let url = `${process.env.REACT_APP_ROOT_URL}/contests/${contestId}/participantRecords?forward=${forward}`;
+    if (!localStorage.getItem('user'))
+        url = `${url}&paginate=20`;
     return axios({
         method: 'get',
-        url: `${process.env.REACT_APP_ROOT_URL}/contests/${contestId}/participantRecords?page=${page}`,
-        headers: authHeader()
+        url: url,
+        headers: authHeader(),
+        data: lek
     });
 }
 

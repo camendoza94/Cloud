@@ -11,8 +11,7 @@ class ContestDetail extends Component {
         super(props);
         this.state = {
             participantRecords: [],
-            page: 1,
-            totalPages: 1,
+            page: 0,
             loading: true
         };
         this.deleteContest = this.deleteContest.bind(this);
@@ -29,21 +28,22 @@ class ContestDetail extends Component {
                     this.setState({notFound: true})
                 }
                 contestId = response.data.contest.url.S;
-                this.setState({contest: response.data.contest}, this.getParticipantRecords(contestId, this.state.page))
+                this.setState({contest: response.data.contest}, this.getParticipantRecords(contestId, this.state.lek, true))
             }).catch((err) => console.log(err))
         } else {
-            this.getParticipantRecords(contestId);
+            this.getParticipantRecords(contestId, null, true);
         }
 
     }
 
-    getParticipantRecords(contestId, page) {
-        page = page || 1;
-        participantRecordService.getParticipantRecords(contestId, page).then(response => {
+    getParticipantRecords(contestId, lek, forward) {
+        participantRecordService.getParticipantRecords(contestId, lek, forward).then(response => {
+            const newPage = forward ? this.state.page + 1 : this.state.page - 1;
             this.setState({
                 participantRecords: response.data.participantRecords,
-                page: page,
-                loading: false
+                page: newPage,
+                loading: false,
+                lek: response.data.lek
             });
         }).catch((err) => console.log(err));
     }
@@ -58,7 +58,7 @@ class ContestDetail extends Component {
     render() {
         const user = this.props.location.state && this.props.location.state.user;
         const contest = (this.props.location.state && this.props.location.state.contest) || this.state.contest;
-        const {participantRecords, loading, page, totalPages, notFound} = this.state;
+        const {participantRecords, loading, page, lek, notFound} = this.state;
         return (
             <div>
                 {notFound ? <Redirect to={{pathname: '/404Page', state: {from: this.props.location}}}/>:
@@ -113,15 +113,15 @@ class ContestDetail extends Component {
                                 {page !== 1 &&
                                 <li className="page-item">
                                     <button className="page-link" onClick={() => {
-                                        this.getParticipantRecords(contest.url.S, page - 1)
+                                        this.getParticipantRecords(contest.url.S, lek, false)
                                     }}>
                                         &#x3C;
                                     </button>
                                 </li>}
-                                {page < totalPages &&
+                                {lek &&
                                 <li className="page-item">
                                     <button className="page-link" onClick={() => {
-                                        this.getParticipantRecords(contest.url.S, page + 1)
+                                        this.getParticipantRecords(contest.url.S, lek, true)
                                     }}>
                                         &#x3E;
                                     </button>

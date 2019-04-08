@@ -22,12 +22,16 @@ function deleteContest(id) {
         .catch(err => err);
 }
 
-function getAll(page) {
+function getAll(lek, forward) {
     const id = JSON.parse(localStorage.getItem('user')).id;
+    let url = `${process.env.REACT_APP_ROOT_URL}/users/${id}/contests?forward=${forward}`;
+    if (!localStorage.getItem('user'))
+        url = `${url}&paginate=20`;
     return axios({
         method: 'get',
-        url: `${process.env.REACT_APP_ROOT_URL}/users/${id}/contests?page=${page}`,
-        headers: authHeader()
+        url: url,
+        headers: authHeader(),
+        data: lek
     }).then(contests => contests)
         .catch(err => err);
 }
@@ -55,7 +59,7 @@ function addContest(name, image, url, startDate, endDate, payment, text, recomme
 
 function updateContest(contestId, name, image, url, startDate, endDate, payment, text, recommendations) {
     const data = new FormData();
-    if(image) {
+    if (image) {
         data.append('file', image);
         data.append('filename', image.name);
     }

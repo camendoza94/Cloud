@@ -4,15 +4,13 @@ const Cors = require('cors');
 const bodyParser = require('body-parser');
 const express = require('express');
 const fileUpload = require('express-fileupload');
-const path = require('path');
 
 let app = express();
-
-require('./config/passport');
 
 app.use(Cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
+require('./config/passport');
 app.use(fileUpload());
 
 

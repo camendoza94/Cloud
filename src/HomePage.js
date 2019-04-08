@@ -9,9 +9,8 @@ class HomePage extends Component {
         super(props);
         this.state = {
             contests: [],
-            user: {},
-            page: 1,
-            totalPages: 1
+            page: 0,
+            user: {}
         };
         this.getContests = this.getContests.bind(this);
     }
@@ -20,18 +19,18 @@ class HomePage extends Component {
         this.setState({
             user: JSON.parse(localStorage.getItem('user')),
         });
-        this.getContests(this.state.page);
+        this.getContests(null, true);
     }
 
-    getContests(page) {
-        page = page || 1;
-        contestService.getAll(page).then(response => {
-            this.setState({contests: response.data.contests})
+    getContests(lek, forward) {
+        contestService.getAll(lek, forward).then(response => {
+            const newPage = forward ? this.state.page + 1 : this.state.page - 1;
+            this.setState({contests: response.data.contests, lek: response.data.lek, page: newPage})
         });
     }
 
     render() {
-        const {contests, user, page, totalPages} = this.state;
+        const {contests, user, lek, page} = this.state;
         return (
             <div className="col-md-12">
                 <h1>Hi!</h1>
@@ -49,15 +48,15 @@ class HomePage extends Component {
                         {page !== 1 &&
                         <li className="page-item">
                             <button className="page-link" onClick={() => {
-                                this.getContests(page - 1)
+                                this.getContests(lek, false)
                             }}>
                                 &#x3C;
                             </button>
                         </li>}
-                        {page !== totalPages &&
+                        {lek &&
                         <li className="page-item">
                             <button className="page-link" onClick={() => {
-                                this.getContests(page + 1)
+                                this.getContests(lek, true)
                             }}>
                                 &#x3E;
                             </button>
