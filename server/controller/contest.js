@@ -5,7 +5,7 @@ const uuid = require('uuid/v4');
 const {uploadFileS3} = require('../config/files');
 const {sendMessage} = require('../config/queue');
 const AWS = require('aws-sdk');
-
+const { client } = require('../config/db'); 
 const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 exports.findByURL = (req, res) => {
@@ -24,6 +24,7 @@ exports.findByURL = (req, res) => {
         } else {
             if (data.Item) {
                 console.log("Success", data.Item);
+                client.zincrby('popular', 1, data.Item.url.S);
                 res.json({contest: data.Item});
             } else
                 return res.status(404).send("Not found");
@@ -318,5 +319,23 @@ exports.getParticipantRecords = (req, res) => {
             console.log("Success", data.Items);
             res.json({participantRecords: data.Items});
         }
+    });
+};
+
+exports.getPopularContests = (req, res) => {
+    // Top 3 [0, 1, 2]
+    client.ZREVRANGE('popular', 0, 2, 'withscores', (err, reply) => {
+        if(err){
+            console.log(err);
+            return res.send(err);
+        }
+        let popularContests = {};
+        popularContests = reply.reduce((result, value, index, array) => {
+            if(index % 2 === 0){
+                result[array[index]] = array[index + 1]
+            }
+            return result;
+        }, {});
+        return res.json(popularContests);
     });
 };

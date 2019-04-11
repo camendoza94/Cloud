@@ -12,5 +12,7 @@ module.exports = (app) => {
     app.post('/contests/:id/participantRecords', auth.optional, Contest.addParticipantRecord);
     
     app.get('/contests/:id/participantRecords', auth.optional, Contest.getParticipantRecords);
+    
+    app.get('/popular/contests', Contest.getPopularContests);
 
 };
