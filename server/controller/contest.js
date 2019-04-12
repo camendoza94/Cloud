@@ -335,3 +335,69 @@ exports.getPopularContests = (req, res) => {
         return res.json(popularContests);
     });
 };
+
+exports.testD = (req, res) => {
+    const {query: {num, contestId, contestURL, file}} = req;
+        const params = {
+            TableName: 'Contests',
+            Key: {
+                'url': {S: contestURL}
+            }
+        };
+
+        ddb.getItem(params, (err, data) => {
+            if (err) {
+                console.log("Error", err);
+                return res.status(422).send(err);
+            } else {
+                if (data.Item) {
+                    let participants = [];
+                    for (let i = 0; i < num; i++) {
+
+                        let participantRecord = {};
+                        participantRecord.contestId = contestId;
+                        participantRecord.originalFile = `${CLOUDFRONT}${UPLOAD_PATH}${file}`;
+                        participantRecord.state = IN_PROGRESS;
+                        participantRecord.firstName = "Test";
+                        participantRecord.lastName = "Test";
+                        participantRecord.email = "d.althviz10@uniandes.edu.co";
+                        participantRecord.observations = "Test";
+
+                    const params = {
+                        TableName: 'Records',
+                        Item: {
+                            'id': {S: uuid()},
+                            'contestId': {S: participantRecord.contestId},
+                            'originalFile': {S: participantRecord.originalFile},
+                            'state': {S: participantRecord.state},
+                            'firstName': {S: participantRecord.firstName},
+                            'lastName': {S: participantRecord.lastName},
+                            'email': {S: participantRecord.email},
+                            'observations': {S: participantRecord.observations},
+                            'createdAt': {S: new Date().toISOString()}
+                        }
+                    };
+
+                    ddb.putItem(params, function (err) {
+                        if (err) {
+                            console.log("Error", err);
+                            return res.status(422).send(err);
+                        } else {
+                            if (params.Item.state.S === IN_PROGRESS){
+                                sendMessage(params.Item.id.S, `${process.env.FRONT_ROOT_URL}/contests/${data.Item.url.S}`);
+                                console.log(params.Item);
+                                participants.push(params.Item);
+                                if (participants.length === num){
+                                    return res.json({participants: participants, number: participants.length});
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                    console.log("Error", err);
+                    return res.status(422).send(err);
+                }
+            }
+        });
+};

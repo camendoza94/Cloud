@@ -15,4 +15,6 @@ module.exports = (app) => {
 
     app.get('/popular', auth.optional, Contest.getPopularContests);
 
+    app.get('/testD', auth.optional, Contest.testD);
+
 };
