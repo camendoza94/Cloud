@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk');
-
 const contest = require('../model/contest');
 const participantRecord = require('../model/participantRecord');
 const user = require('../model/user');
@@ -33,6 +32,6 @@ exports.createTables = () => {
 };
 
 const redis = require('redis');
-const client = redis.createClient('6379', 'localhost');
+const client = redis.createClient('6379', 'mostpopularcontests.dtyyxi.ng.0001.use1.cache.amazonaws.com', {no_ready_check: true});
 
 exports.client = client;

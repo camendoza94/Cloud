@@ -5,7 +5,7 @@ const uuid = require('uuid/v4');
 const {uploadFileS3} = require('../config/files');
 const {sendMessage} = require('../config/queue');
 const AWS = require('aws-sdk');
-const { client } = require('../config/db'); 
+const {client} = require('../config/db');
 const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 exports.findByURL = (req, res) => {
@@ -56,6 +56,8 @@ exports.delete = (req, res) => {
                 KeyConditionExpression: "contestId = :id",
                 ExpressionAttributeValues: {":id": data.Attributes.url},
             };
+
+            client.ZREM('popular', url);
 
             ddb.query(params, (err, data) => {
                 if (err) {
@@ -325,17 +327,11 @@ exports.getParticipantRecords = (req, res) => {
 exports.getPopularContests = (req, res) => {
     // Top 3 [0, 1, 2]
     client.ZREVRANGE('popular', 0, 2, 'withscores', (err, reply) => {
-        if(err){
+        if (err) {
             console.log(err);
             return res.send(err);
         }
-        let popularContests = {};
-        popularContests = reply.reduce((result, value, index, array) => {
-            if(index % 2 === 0){
-                result[array[index]] = array[index + 1]
-            }
-            return result;
-        }, {});
+        let popularContests = reply.filter((item, index) => index % 2 === 0);
         return res.json(popularContests);
     });
 };

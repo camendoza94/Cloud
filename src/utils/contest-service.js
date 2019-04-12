@@ -6,11 +6,16 @@ export const contestService = {
     deleteContest,
     addContest,
     getByURL,
-    updateContest
+    updateContest,
+    getMostPopular
 };
 
 function getByURL(url) {
     return axios.get(`${process.env.REACT_APP_ROOT_URL}/contests/${url}`, authHeader());
+}
+
+function getMostPopular() {
+    return axios.get(`${process.env.REACT_APP_ROOT_URL}/popular/`, authHeader());
 }
 
 function deleteContest(id) {

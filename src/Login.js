@@ -46,8 +46,7 @@ class Login extends Component {
             })
             .catch((err) => {
                 this.setState({error: err.response.data.error, loading: false});
-            }
-            )
+            })
 
     }
 
@@ -67,9 +66,9 @@ class Login extends Component {
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
                             <input type="email"
-                                className={'form-control' + (submitted && !email ? ' is-invalid' : (submitted && email) ? ' is-valid' : '')}
-                                name="email" value={email}
-                                onChange={this.handleChange}/>
+                                   className={'form-control' + (submitted && !email ? ' is-invalid' : (submitted && email) ? ' is-valid' : '')}
+                                   name="email" value={email}
+                                   onChange={this.handleChange}/>
                             {submitted && !email &&
                             <div className="text-muted">Email is required</div>
                             }
@@ -77,9 +76,9 @@ class Login extends Component {
                         <div className="form-group">
                             <label htmlFor="password">Password</label>
                             <input type="password"
-                                className={'form-control' + (submitted && !password ? ' is-invalid' : (submitted && password) ? ' is-valid' : '')}
-                                name="password" value={password}
-                                onChange={this.handleChange}/>
+                                   className={'form-control' + (submitted && !password ? ' is-invalid' : (submitted && password) ? ' is-valid' : '')}
+                                   name="password" value={password}
+                                   onChange={this.handleChange}/>
                             {submitted && !password &&
                             <div className="text-muted">Password is required</div>
                             }
@@ -88,13 +87,14 @@ class Login extends Component {
                             <button className="btn btn-primary" disabled={loading}>Login</button>
                             {loading &&
                             <img alt=""
-                                src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+                                 src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
                             }
                         </div>
                         <p>Don't have an account? Click <Link to='/register'>here</Link></p>
                         {error &&
                         <div className={'alert alert-danger'}>{error}</div>
                         }
+                        <p>Check most popular contests <Link to={'/popular'}>here</Link></p>
                     </form>
                 </div>
             </div>

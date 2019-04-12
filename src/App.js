@@ -10,6 +10,7 @@ import ContestDetail from "./components/contest/ContestDetail";
 import AddContest from "./components/contest/AddContest";
 import ParticipantRecordNew from './components/participantRecord/ParticipantRecordNew';
 import NoMatch from "./NoMatch";
+import MostPopular from "./MostPopular";
 
 require('dotenv').config();
 
@@ -27,6 +28,7 @@ class App extends Component {
                                     <Route path='/register' component={Register}/>
                                     <Route exact path='/contests/:url' component={ContestDetail}/>
                                     <Route path='/contests/:id/addParticipantRecord' component={ParticipantRecordNew}/>
+                                    <Route path='/popular' component={MostPopular}/>
                                     <PrivateRoute exact path="/contests" component={HomePage}/>
                                     <PrivateRoute exact path="/" component={HomePage}/>
                                     <PrivateRoute exact path="/add" component={AddContest}/>
