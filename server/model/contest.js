@@ -5,7 +5,8 @@ const params = {
     ],
     AttributeDefinitions: [
         {AttributeName: "url", AttributeType: "S"},
-        {AttributeName: "userId", AttributeType: "S"}
+        {AttributeName: "userId", AttributeType: "S"},
+        {AttributeName: "name", AttributeType: "S"}
     ],
     ProvisionedThroughput: {
         ReadCapacityUnits: 5,
@@ -16,7 +17,11 @@ const params = {
         KeySchema: [
             {
                 AttributeName: "userId",
-                KeyType: "HASH"
+                KeyType: "HASH",
+            },
+            {
+                AttributeName: "name",
+                KeyType: "RANGE",
             }
         ],
         Projection: {
