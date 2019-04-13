@@ -387,9 +387,7 @@ exports.testD = (req, res) => {
                                 sendMessage(params.Item.id.S, `${process.env.FRONT_ROOT_URL}/contests/${data.Item.url.S}`);
                                 console.log(params.Item);
                                 participants.push(params.Item);
-                                console.log(participants.length);
-                                console.log(num)
-                                if (participants.length === num){
+                                if (participants.length == num){
                                     return res.json({participants: participants, number: participants.length});
                                 }
                             }
