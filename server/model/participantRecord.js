@@ -27,10 +27,7 @@ const params = {
         Projection: {
             ProjectionType: "ALL"
         },
-        ProvisionedThroughput: {
-            ReadCapacityUnits: 7,
-            WriteCapacityUnits: 7
-        }
+        BillingMode: "PAY_PER_REQUEST"
     }]
 };
 

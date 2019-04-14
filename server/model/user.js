@@ -6,10 +6,7 @@ const params = {
     AttributeDefinitions: [
         {AttributeName: "email", AttributeType: "S"},
     ],
-    ProvisionedThroughput: {
-        ReadCapacityUnits: 5,
-        WriteCapacityUnits: 5
-    }
+    BillingMode: "PAY_PER_REQUEST"
 };
 
 module.exports = params;
