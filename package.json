@@ -2,7 +2,7 @@
   "name": "proyecto1cloud",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://cloudgrupo1b.ddns.net",
+  "homepage": "http://cloudgrupo1.s3-website-us-east-1.amazonaws.com",
   "dependencies": {
     "aws-sdk": "^2.411.0",
     "axios": "^0.18.0",
