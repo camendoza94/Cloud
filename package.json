@@ -5,7 +5,7 @@
   "homepage": "http://cloudgrupo1.s3-website-us-east-1.amazonaws.com",
   "dependencies": {
     "aws-sdk": "^2.411.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "cron": "^1.6.0",
